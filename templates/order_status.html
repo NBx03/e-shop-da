@@ -1,0 +1,64 @@
+{% extends 'base.html' %}
+
+{% block title %}Заказ #{{ order.order_number }} — VoltStore{% endblock %}
+
+{% block content %}
+<div class="max-w-md mx-auto px-4 py-8">
+  <div class="tg-card rounded-2xl shadow-sm border border-slate-200/80 p-6 text-center space-y-6">
+    {% if order.payment_status == 'paid' or order.status == 'new' and order.payment_method == 'cod' %}
+      <div class="w-16 h-16 bg-emerald-50 text-emerald-600 rounded-full flex items-center justify-center mx-auto">
+        <i data-lucide="check-circle-2" class="w-9 h-9"></i>
+      </div>
+      <div>
+        <h1 class="text-2xl font-bold">Спасибо за заказ!</h1>
+        <p class="text-slate-600 text-sm mt-1">Заказ <b>#{{ order.order_number }}</b> успешно оформлен</p>
+      </div>
+    {% else %}
+      <div class="w-16 h-16 bg-red-50 text-red-600 rounded-full flex items-center justify-center mx-auto">
+        <i data-lucide="alert-circle" class="w-9 h-9"></i>
+      </div>
+      <div>
+        <h1 class="text-2xl font-bold">Оплата не завершена</h1>
+        <p class="text-slate-600 text-sm mt-1">Заказ #{{ order.order_number }} ожидает оплаты или был отменен</p>
+      </div>
+    {% endif %}
+
+    <div class="bg-slate-50 rounded-xl p-4 text-left text-sm space-y-2.5">
+      <div class="flex justify-between">
+        <span class="tg-hint">Статус заказа:</span>
+        <span class="font-semibold text-slate-800">{{ order.get_status_display }}</span>
+      </div>
+      <div class="flex justify-between">
+        <span class="tg-hint">Статус оплаты:</span>
+        <span class="font-semibold text-slate-800">{{ order.get_payment_status_display }}</span>
+      </div>
+      <div class="flex justify-between">
+        <span class="tg-hint">Способ получения:</span>
+        <span class="font-medium text-slate-800">{{ order.get_delivery_method_display }}</span>
+      </div>
+      {% if order.tracking_number %}
+      <div class="flex justify-between items-center pt-2 border-t border-slate-200">
+        <span class="tg-hint font-medium">Трек-номер:</span>
+        <span class="font-mono bg-blue-100 text-blue-800 px-2 py-0.5 rounded text-xs font-bold">{{ order.tracking_number }}</span>
+      </div>
+      {% endif %}
+      <div class="flex justify-between pt-2 border-t border-slate-200 text-base font-bold">
+        <span>Сумма к оплате:</span>
+        <span class="text-blue-600">{{ order.total_amount }} ₽</span>
+      </div>
+    </div>
+
+    <div class="space-y-3 pt-2">
+      {% if order.payment_status != 'paid' and order.payment_method == 'online' %}
+        <a href="/orders/payment/mock/{{ order.id }}/" class="block w-full py-3.5 px-4 bg-blue-600 hover:bg-blue-700 text-white font-semibold rounded-xl text-center shadow-md">
+          Повторить оплату
+        </a>
+      {% endif %}
+
+      <a href="/" class="block w-full py-3 px-4 bg-slate-100 hover:bg-slate-200 text-slate-800 font-medium rounded-xl text-center">
+        Вернуться в каталог
+      </a>
+    </div>
+  </div>
+</div>
+{% endblock %}

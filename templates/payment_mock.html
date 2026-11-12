@@ -1,0 +1,92 @@
+{% extends 'base.html' %}
+
+{% block title %}Оплата заказа #{{ order.order_number }} — Платежный шлюз (Тест){% endblock %}
+
+{% block content %}
+<div class="max-w-md mx-auto px-4 py-8">
+  <div class="tg-card rounded-2xl shadow-lg border border-slate-200/80 p-6 text-center space-y-6">
+    <div class="w-16 h-16 bg-blue-50 text-blue-600 rounded-full flex items-center justify-center mx-auto">
+      <i data-lucide="credit-card" class="w-8 h-8"></i>
+    </div>
+
+    <div>
+      <div class="inline-block px-3 py-1 bg-amber-100 text-amber-800 text-xs font-semibold rounded-full mb-2">
+        Тестовый платежный шлюз
+      </div>
+      <h1 class="text-xl font-bold">Оплата заказа #{{ order.order_number }}</h1>
+      <p class="text-3xl font-extrabold text-blue-600 mt-2">{{ order.total_amount }} ₽</p>
+    </div>
+
+    <div class="border-t border-b border-slate-100 py-3 text-left text-sm space-y-1.5 tg-hint">
+      <div class="flex justify-between">
+        <span>Получатель:</span>
+        <span class="font-medium text-slate-800">ООО «ВольтСтор»</span>
+      </div>
+      <div class="flex justify-between">
+        <span>Покупатель:</span>
+        <span class="font-medium text-slate-800">{{ order.customer_name }}</span>
+      </div>
+      <div class="flex justify-between">
+        <span>Телефон:</span>
+        <span class="font-medium text-slate-800">{{ order.customer_phone }}</span>
+      </div>
+    </div>
+
+    <p class="text-xs tg-hint leading-relaxed">
+      Это тестовая страница банка. При нажатии на кнопку на бэкенд будет отправлен эмулированный вебхук платежной системы.
+    </p>
+
+    <div class="space-y-3 pt-2">
+      <button
+        id="btn-success"
+        onclick="submitPayment('success')"
+        class="w-full py-3.5 px-4 bg-emerald-600 hover:bg-emerald-700 text-white font-semibold rounded-xl shadow-md transition-all active:scale-[0.98] flex items-center justify-center gap-2">
+        <i data-lucide="check-circle" class="w-5 h-5"></i>
+        Оплата прошла (Успех)
+      </button>
+
+      <button
+        id="btn-fail"
+        onclick="submitPayment('failed')"
+        class="w-full py-3.5 px-4 bg-slate-100 hover:bg-slate-200 text-slate-700 font-semibold rounded-xl transition-all active:scale-[0.98] flex items-center justify-center gap-2">
+        <i data-lucide="x-circle" class="w-5 h-5"></i>
+        Отказ / Отмена оплаты
+      </button>
+    </div>
+  </div>
+</div>
+{% endblock %}
+
+{% block extra_scripts %}
+<script>
+  async function submitPayment(status) {
+    const btnSuccess = document.getElementById('btn-success');
+    const btnFail = document.getElementById('btn-fail');
+    btnSuccess.disabled = true;
+    btnFail.disabled = true;
+    btnSuccess.classList.add('opacity-50');
+    btnFail.classList.add('opacity-50');
+
+    try {
+      const response = await fetch('/orders/payment/webhook/', {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({
+          order_id: '{{ order.id }}',
+          status: status
+        })
+      });
+      const data = await response.json();
+      
+      // Возврат обратно в заказ
+      window.location.href = '/orders/status/{{ order.id }}/';
+    } catch (e) {
+      alert('Ошибка соединения с платежным шлюзом: ' + e);
+      btnSuccess.disabled = false;
+      btnFail.disabled = false;
+      btnSuccess.classList.remove('opacity-50');
+      btnFail.classList.remove('opacity-50');
+    }
+  }
+</script>
+{% endblock %}

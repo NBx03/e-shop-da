@@ -1,0 +1,316 @@
+{% extends 'base.html' %}
+
+{% block title %}VoltStore — Электроника в Telegram{% endblock %}
+
+{% block content %}
+<div class="max-w-4xl mx-auto px-3 sm:px-6 w-full">
+  
+  <!-- Header / Nav -->
+  <header class="sticky top-0 z-30 pt-3 pb-3 tg-card backdrop-blur-md bg-opacity-90 border-b border-slate-200/60 -mx-3 px-4 sm:mx-0 sm:px-0 sm:bg-transparent sm:border-none">
+    <div class="flex items-center justify-between gap-3">
+      <!-- Logo -->
+      <div class="flex items-center gap-2">
+        <div class="w-9 h-9 rounded-xl bg-blue-600 text-white flex items-center justify-center font-black text-lg shadow-sm">
+          ⚡
+        </div>
+        <div>
+          <span class="font-extrabold text-lg tracking-tight">VoltStore</span>
+          <span class="block text-[10px] uppercase font-bold text-blue-600 tracking-wider">Электроника</span>
+        </div>
+      </div>
+
+      <!-- Search & Cart buttons -->
+      <div class="flex items-center gap-2">
+        <button
+          onclick="toggleCart(true)"
+          class="relative p-2.5 rounded-xl bg-blue-50 text-blue-700 hover:bg-blue-100 transition-colors flex items-center gap-1.5 font-semibold text-sm">
+          <i data-lucide="shopping-bag" class="w-5 h-5"></i>
+          <span class="hidden sm:inline">Корзина</span>
+          <span id="cart-badge" class="hidden min-w-[20px] h-5 px-1.5 rounded-full bg-blue-600 text-white text-xs font-bold items-center justify-center">0</span>
+        </button>
+      </div>
+    </div>
+
+    <!-- Search Input -->
+    <div class="mt-3 relative">
+      <i data-lucide="search" class="w-4 h-4 absolute left-3.5 top-1/2 -translate-y-1/2 tg-hint"></i>
+      <input
+        type="text"
+        id="search-input"
+        placeholder="Поиск по 25+ гаджетам (iPhone, MacBook, Sony...)"
+        class="w-full pl-10 pr-4 py-2.5 text-sm rounded-xl border border-slate-200 bg-slate-50 focus:bg-white focus:outline-none focus:ring-2 focus:ring-blue-500 transition-all placeholder:text-slate-400"
+        oninput="handleSearch(this.value)">
+    </div>
+
+    <!-- Category Pills Slider -->
+    <div class="mt-3 flex items-center gap-2 overflow-x-auto no-scrollbar py-1">
+      <button
+        onclick="selectCategory('all')"
+        class="category-btn active px-3.5 py-1.5 rounded-full text-xs font-semibold whitespace-nowrap transition-all bg-blue-600 text-white shadow-sm"
+        data-cat-id="all">
+        Все товары
+      </button>
+      {% for cat in categories %}
+        <button
+          onclick="selectCategory('{{ cat.id }}')"
+          class="category-btn px-3.5 py-1.5 rounded-full text-xs font-semibold whitespace-nowrap transition-all bg-slate-100 hover:bg-slate-200 text-slate-700"
+          data-cat-id="{{ cat.id }}">
+          {{ cat.name }}
+        </button>
+      {% endfor %}
+    </div>
+
+    <!-- Sorting -->
+    <div class="mt-2 flex items-center justify-between text-xs text-slate-500">
+      <span id="products-count-label">Загрузка каталога...</span>
+      <div class="flex items-center gap-1">
+        <span>Сортировка:</span>
+        <select id="sort-select" onchange="handleSort(this.value)" class="bg-transparent font-medium text-slate-800 focus:outline-none cursor-pointer">
+          <option value="popular">По популярности</option>
+          <option value="price_asc">Сначала дешевле</option>
+          <option value="price_desc">Сначала дороже</option>
+        </select>
+      </div>
+    </div>
+  </header>
+
+  <!-- Products Grid -->
+  <main class="mt-4">
+    <div id="products-grid" class="grid grid-cols-2 sm:grid-cols-3 lg:grid-cols-4 gap-3 sm:gap-4">
+      <!-- Injected via JavaScript -->
+    </div>
+
+    <!-- Empty state -->
+    <div id="empty-state" class="hidden text-center py-16 space-y-3">
+      <div class="w-16 h-16 bg-slate-100 rounded-full flex items-center justify-center mx-auto text-slate-400">
+        <i data-lucide="package-search" class="w-8 h-8"></i>
+      </div>
+      <h3 class="font-bold text-slate-800">Ничего не нашлось</h3>
+      <p class="text-xs tg-hint">Попробуйте изменить поисковый запрос или выбрать другой раздел</p>
+    </div>
+  </main>
+</div>
+
+<!-- ================= PRODUCT DETAIL MODAL ================= -->
+<div id="product-modal" class="fixed inset-0 z-50 hidden bg-black/60 backdrop-blur-sm flex items-end sm:items-center justify-center p-0 sm:p-4 transition-opacity">
+  <div class="tg-card w-full max-w-lg rounded-t-3xl sm:rounded-2xl max-h-[90vh] overflow-y-auto p-5 sm:p-6 space-y-4 shadow-2xl relative animate-in slide-in-from-bottom duration-200">
+    <!-- Close button -->
+    <button onclick="closeProductModal()" class="absolute top-4 right-4 p-2 rounded-full bg-slate-100 hover:bg-slate-200 text-slate-600 transition-colors z-10">
+      <i data-lucide="x" class="w-5 h-5"></i>
+    </button>
+
+    <!-- Image preview -->
+    <div class="relative bg-slate-100 rounded-2xl overflow-hidden aspect-square flex items-center justify-center">
+      <img id="modal-img" src="" alt="" class="w-full h-full object-cover">
+      <span id="modal-status-badge" class="absolute top-3 left-3 px-2.5 py-1 rounded-full text-[11px] font-bold text-white shadow-sm"></span>
+    </div>
+
+    <div>
+      <span id="modal-cat-name" class="text-xs font-semibold text-blue-600 uppercase tracking-wider"></span>
+      <h2 id="modal-title" class="text-lg font-bold text-slate-900 mt-0.5 leading-snug"></h2>
+      
+      <div class="flex items-baseline gap-2 mt-2">
+        <span id="modal-price" class="text-2xl font-black text-slate-900"></span>
+        <span id="modal-old-price" class="text-sm line-through text-slate-400 hidden"></span>
+      </div>
+    </div>
+
+    <!-- Description -->
+    <div>
+      <h4 class="text-xs font-bold uppercase text-slate-400 tracking-wider mb-1">Описание</h4>
+      <p id="modal-desc" class="text-xs leading-relaxed text-slate-600"></p>
+    </div>
+
+    <!-- Specs table -->
+    <div id="modal-specs-container">
+      <h4 class="text-xs font-bold uppercase text-slate-400 tracking-wider mb-1">Характеристики</h4>
+      <div id="modal-specs-list" class="divide-y divide-slate-100 text-xs"></div>
+    </div>
+
+    <!-- Action button -->
+    <div id="modal-action-bar" class="pt-2">
+      <!-- Injected dynamically: 'В корзину' or 'Хочу такой' -->
+    </div>
+  </div>
+</div>
+
+<!-- ================= PREORDER REQUEST MODAL ("ХОЧУ ТАКОЙ") ================= -->
+<div id="preorder-modal" class="fixed inset-0 z-50 hidden bg-black/60 backdrop-blur-sm flex items-end sm:items-center justify-center p-0 sm:p-4">
+  <div class="tg-card w-full max-w-md rounded-t-3xl sm:rounded-2xl p-5 sm:p-6 space-y-4 shadow-2xl relative">
+    <button onclick="closePreorderModal()" class="absolute top-4 right-4 p-2 rounded-full bg-slate-100 text-slate-600">
+      <i data-lucide="x" class="w-5 h-5"></i>
+    </button>
+
+    <div class="text-center">
+      <div class="w-12 h-12 bg-amber-50 text-amber-600 rounded-2xl flex items-center justify-center mx-auto mb-2">
+        <i data-lucide="flame" class="w-6 h-6"></i>
+      </div>
+      <h3 class="text-lg font-bold">Оставить заявку «Хочу такой»</h3>
+      <p id="preorder-product-name" class="text-xs font-semibold text-slate-600 mt-1"></p>
+      <p class="text-[11px] tg-hint mt-1">Мы свяжемся с вами, когда товар поступит на склад</p>
+    </div>
+
+    <form onsubmit="handlePreorderSubmit(event)" class="space-y-3">
+      <input type="hidden" id="preorder-product-id">
+      <div>
+        <label class="block text-xs font-medium text-slate-700 mb-1">Ваше имя *</label>
+        <input type="text" id="preorder-name" required placeholder="Константин" class="w-full px-3 py-2 text-sm rounded-xl border border-slate-200 focus:ring-2 focus:ring-blue-500 focus:outline-none">
+      </div>
+      <div>
+        <label class="block text-xs font-medium text-slate-700 mb-1">Номер телефона *</label>
+        <input type="tel" id="preorder-phone" required placeholder="+7 (999) 000-00-00" class="w-full px-3 py-2 text-sm rounded-xl border border-slate-200 focus:ring-2 focus:ring-blue-500 focus:outline-none">
+      </div>
+      <button type="submit" id="preorder-submit-btn" class="w-full py-3 bg-blue-600 text-white font-semibold rounded-xl hover:bg-blue-700 transition shadow-md">
+        Отправить заявку
+      </button>
+    </form>
+  </div>
+</div>
+
+<!-- ================= CART & CHECKOUT DRAWER ================= -->
+<div id="cart-drawer" class="fixed inset-0 z-50 hidden bg-black/60 backdrop-blur-sm flex justify-end transition-opacity">
+  <div class="tg-card w-full max-w-md h-full flex flex-col shadow-2xl relative">
+    
+    <!-- Cart Header -->
+    <div class="p-4 border-b border-slate-100 flex items-center justify-between">
+      <div class="flex items-center gap-2">
+        <button id="cart-back-btn" onclick="showCartStep(1)" class="p-1.5 rounded-lg hover:bg-slate-100 text-slate-600 hidden">
+          <i data-lucide="arrow-left" class="w-5 h-5"></i>
+        </button>
+        <h3 id="cart-title" class="text-lg font-bold">Корзина</h3>
+      </div>
+      <button onclick="toggleCart(false)" class="p-1.5 rounded-lg hover:bg-slate-100 text-slate-600">
+        <i data-lucide="x" class="w-5 h-5"></i>
+      </button>
+    </div>
+
+    <!-- Step 1: Cart Items -->
+    <div id="cart-step-1" class="flex-1 overflow-y-auto p-4 space-y-3">
+      <div id="cart-items-list" class="divide-y divide-slate-100 space-y-3">
+        <!-- Rendered via JS -->
+      </div>
+      <div id="cart-empty-msg" class="hidden text-center py-16 space-y-3">
+        <div class="w-14 h-14 bg-slate-100 text-slate-400 rounded-full flex items-center justify-center mx-auto">
+          <i data-lucide="shopping-cart" class="w-7 h-7"></i>
+        </div>
+        <p class="font-medium text-slate-700">В корзине пока пусто</p>
+        <button onclick="toggleCart(false)" class="px-4 py-2 bg-blue-600 text-white text-xs font-semibold rounded-xl">
+          Перейти к покупкам
+        </button>
+      </div>
+    </div>
+
+    <!-- Step 2: Checkout Form -->
+    <div id="cart-step-2" class="flex-1 overflow-y-auto p-4 space-y-4 hidden">
+      <form id="checkout-form" onsubmit="handleCheckoutSubmit(event)" class="space-y-4">
+        <div>
+          <label class="block text-xs font-semibold text-slate-700 mb-1">Имя получателя *</label>
+          <input type="text" id="order-name" required placeholder="Иван Иванов" class="w-full px-3 py-2 text-sm rounded-xl border border-slate-200 focus:ring-2 focus:ring-blue-500 focus:outline-none">
+        </div>
+
+        <div>
+          <label class="block text-xs font-semibold text-slate-700 mb-1">Номер телефона *</label>
+          <input type="tel" id="order-phone" required placeholder="+7 999 123-45-67" class="w-full px-3 py-2 text-sm rounded-xl border border-slate-200 focus:ring-2 focus:ring-blue-500 focus:outline-none">
+        </div>
+
+        <!-- Delivery options -->
+        <div>
+          <label class="block text-xs font-semibold text-slate-700 mb-1.5">Способ получения *</label>
+          <div class="grid grid-cols-3 gap-1.5 text-center text-xs">
+            <label class="cursor-pointer">
+              <input type="radio" name="delivery" value="pickup" checked onchange="updateDeliveryUI(this.value)" class="peer sr-only">
+              <div class="p-2.5 rounded-xl border border-slate-200 peer-checked:border-blue-600 peer-checked:bg-blue-50 peer-checked:text-blue-700 font-medium">
+                Самовывоз
+              </div>
+            </label>
+            <label class="cursor-pointer">
+              <input type="radio" name="delivery" value="courier" onchange="updateDeliveryUI(this.value)" class="peer sr-only">
+              <div class="p-2.5 rounded-xl border border-slate-200 peer-checked:border-blue-600 peer-checked:bg-blue-50 peer-checked:text-blue-700 font-medium">
+                Курьер
+              </div>
+            </label>
+            <label class="cursor-pointer">
+              <input type="radio" name="delivery" value="postal" onchange="updateDeliveryUI(this.value)" class="peer sr-only">
+              <div class="p-2.5 rounded-xl border border-slate-200 peer-checked:border-blue-600 peer-checked:bg-blue-50 peer-checked:text-blue-700 font-medium">
+                В регионы
+              </div>
+            </label>
+          </div>
+        </div>
+
+        <!-- Address field -->
+        <div id="address-block" class="hidden">
+          <label class="block text-xs font-semibold text-slate-700 mb-1">Адрес доставки *</label>
+          <textarea id="order-address" rows="2" placeholder="г. Москва, ул. Тверская, д. 1, кв. 10" class="w-full px-3 py-2 text-sm rounded-xl border border-slate-200 focus:ring-2 focus:ring-blue-500 focus:outline-none"></textarea>
+        </div>
+
+        <!-- Payment options -->
+        <div>
+          <label class="block text-xs font-semibold text-slate-700 mb-1.5">Способ оплаты *</label>
+          <div class="space-y-1.5 text-xs">
+            <label class="flex items-center gap-2 p-2.5 rounded-xl border border-slate-200 cursor-pointer">
+              <input type="radio" name="payment" value="online" checked class="text-blue-600 focus:ring-blue-500">
+              <div class="flex-1">
+                <span class="font-semibold block">Онлайн-оплата (карта / СБП)</span>
+                <span class="tg-hint text-[11px]">Безопасная оплата через шлюз банка</span>
+              </div>
+            </label>
+
+            <label id="payment-cod-label" class="flex items-center gap-2 p-2.5 rounded-xl border border-slate-200 cursor-pointer">
+              <input type="radio" name="payment" value="cod" id="payment-cod-radio" class="text-blue-600 focus:ring-blue-500">
+              <div class="flex-1">
+                <span class="font-semibold block">При получении</span>
+                <span class="tg-hint text-[11px]">Наличными или картой курьеру / в пункте</span>
+              </div>
+            </label>
+            <p id="cod-hint" class="text-[11px] text-amber-600 hidden">⚠️ При отправке в регионы доступна только онлайн-оплата.</p>
+          </div>
+        </div>
+
+        <div>
+          <label class="block text-xs font-semibold text-slate-700 mb-1">Комментарий к заказу</label>
+          <input type="text" id="order-comment" placeholder="Код домофона, удобное время звонка..." class="w-full px-3 py-2 text-sm rounded-xl border border-slate-200 focus:ring-2 focus:ring-blue-500 focus:outline-none">
+        </div>
+
+        <!-- Agreement Checkbox -->
+        <div class="pt-2">
+          <label class="flex items-start gap-2 cursor-pointer text-xs">
+            <input type="checkbox" id="order-consent" required checked class="mt-0.5 rounded text-blue-600 focus:ring-blue-500">
+            <span class="tg-hint leading-tight">
+              Согласен с <a href="/terms/" target="_blank" class="text-blue-600 underline">публичной офертой</a> и обработкой <a href="/terms/" target="_blank" class="text-blue-600 underline">персональных данных</a>.
+            </span>
+          </label>
+        </div>
+      </form>
+    </div>
+
+    <!-- Cart Footer -->
+    <div id="cart-footer" class="p-4 border-t border-slate-100 bg-slate-50/50 space-y-3">
+      <div class="flex justify-between items-center text-sm">
+        <span class="tg-hint">Итого к оплате:</span>
+        <span id="cart-total-amount" class="text-xl font-black text-slate-900">0 ₽</span>
+      </div>
+
+      <button id="cart-checkout-btn" onclick="showCartStep(2)" class="w-full py-3.5 bg-blue-600 hover:bg-blue-700 text-white font-semibold rounded-xl transition shadow-md flex items-center justify-center gap-2">
+        <span>Перейти к оформлению</span>
+        <i data-lucide="arrow-right" class="w-4 h-4"></i>
+      </button>
+
+      <button id="order-submit-btn" onclick="document.getElementById('checkout-form').requestSubmit()" class="w-full py-3.5 bg-emerald-600 hover:bg-emerald-700 text-white font-semibold rounded-xl transition shadow-md hidden flex items-center justify-center gap-2">
+        <i data-lucide="lock" class="w-4 h-4"></i>
+        <span>Подтвердить заказ</span>
+      </button>
+    </div>
+
+  </div>
+</div>
+
+<!-- Pass startapp parameter to script if present -->
+<script>
+  window.STARTAPP_PARAM = "{{ startapp_slug }}";
+</script>
+{% endblock %}
+
+{% block extra_scripts %}
+<script src="/static/js/app.js"></script>
+{% endblock %}

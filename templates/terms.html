@@ -1,0 +1,32 @@
+{% extends 'base.html' %}
+
+{% block title %}Оферта и согласие на обработку данных — VoltStore{% endblock %}
+
+{% block content %}
+<div class="max-w-2xl mx-auto px-4 py-8">
+  <div class="mb-6">
+    <a href="/" class="inline-flex items-center gap-1.5 text-sm font-medium text-blue-600 hover:text-blue-700">
+      <i data-lucide="arrow-left" class="w-4 h-4"></i> Назад в магазин
+    </a>
+  </div>
+
+  <div class="tg-card p-6 rounded-2xl shadow-sm border border-slate-200/60 space-y-6">
+    <h1 class="text-xl font-bold tracking-tight">Пользовательское соглашение и оферта</h1>
+    
+    <section class="space-y-2 text-sm leading-relaxed tg-hint">
+      <h2 class="font-semibold text-slate-900 text-base">1. Общие положения</h2>
+      <p>Настоящий документ является публичной офертой интернет-магазина (далее — Продавец) и регулирует порядок приобретения товаров через Telegram Mini App и веб-сайт.</p>
+    </section>
+
+    <section class="space-y-2 text-sm leading-relaxed tg-hint">
+      <h2 class="font-semibold text-slate-900 text-base">2. Согласие на обработку персональных данных</h2>
+      <p>Оформляя заказ или оставляя заявку «Хочу такой», Покупатель дает согласие на обработку предоставленных персональных данных (имя, номер телефона, адрес доставки) исключительно в целях исполнения договора купли-продажи и доставки заказов.</p>
+    </section>
+
+    <section class="space-y-2 text-sm leading-relaxed tg-hint">
+      <h2 class="font-semibold text-slate-900 text-base">3. Оплата и доставка</h2>
+      <p>Оплата товаров может производиться онлайн банковскими картами или при получении заказа (для способов получения «Самовывоз» и «Доставка курьером»).</p>
+    </section>
+  </div>
+</div>
+{% endblock %}
