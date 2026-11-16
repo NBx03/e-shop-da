@@ -1,6 +1,6 @@
 {% extends 'base.html' %}
 
-{% block title %}Оплата заказа #{{ order.order_number }} — Платежный шлюз (Тест){% endblock %}
+{% block title %}Оплата заказа #{{ order.order_number }} — Платежный шлюз банка{% endblock %}
 
 {% block content %}
 <div class="max-w-md mx-auto px-4 py-8">
@@ -10,9 +10,6 @@
     </div>
 
     <div>
-      <div class="inline-block px-3 py-1 bg-amber-100 text-amber-800 text-xs font-semibold rounded-full mb-2">
-        Тестовый платежный шлюз
-      </div>
       <h1 class="text-xl font-bold">Оплата заказа #{{ order.order_number }}</h1>
       <p class="text-3xl font-extrabold text-blue-600 mt-2">{{ order.total_amount }} ₽</p>
     </div>
@@ -20,7 +17,7 @@
     <div class="border-t border-b border-slate-100 py-3 text-left text-sm space-y-1.5 tg-hint">
       <div class="flex justify-between">
         <span>Получатель:</span>
-        <span class="font-medium text-slate-800">ООО «ВольтСтор»</span>
+        <span class="font-medium text-slate-800">ООО «ДА»</span>
       </div>
       <div class="flex justify-between">
         <span>Покупатель:</span>

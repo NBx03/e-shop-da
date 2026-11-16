@@ -1,0 +1,100 @@
+<svg width="393" height="852" viewBox="0 0 393 852" fill="none" xmlns="http://www.w3.org/2000/svg">
+  <defs>
+    <linearGradient id="detailPhoneScreen" x1="0" y1="0" x2="1" y2="1">
+      <stop offset="0%" stop-color="#1E1B4B"/>
+      <stop offset="50%" stop-color="#312E81"/>
+      <stop offset="100%" stop-color="#4338CA"/>
+    </linearGradient>
+    <linearGradient id="glyphGlow" x1="0" y1="0" x2="0" y2="1">
+      <stop offset="0%" stop-color="#FFFFFF"/>
+      <stop offset="100%" stop-color="#E0E7FF"/>
+    </linearGradient>
+  </defs>
+
+  <!-- Background -->
+  <rect width="393" height="852" rx="40" fill="#FFFFFF"/>
+
+  <!-- Top Bar -->
+  <rect width="393" height="54" fill="#FFFFFF"/>
+  <path d="M26 28L20 34L26 40" stroke="#2481CC" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"/>
+  <text x="36" y="38" font-family="-apple-system, BlinkMacSystemFont, 'Inter', sans-serif" font-size="15" font-weight="500" fill="#2481CC">Каталог</text>
+  <text x="196" y="38" font-family="-apple-system, BlinkMacSystemFont, 'Inter', sans-serif" font-size="16" font-weight="700" fill="#0F172A" text-anchor="middle">Карточка товара</text>
+  <circle cx="365" cy="34" r="3" fill="#94A3B8"/>
+  <circle cx="373" cy="34" r="3" fill="#94A3B8"/>
+  <circle cx="381" cy="34" r="3" fill="#94A3B8"/>
+
+  <!-- Product Image Showcase Container -->
+  <rect x="16" y="66" width="361" height="260" rx="20" fill="#F8FAFC" stroke="#E2E8F0"/>
+  
+  <!-- Status Badge inside image box -->
+  <rect x="28" y="78" width="84" height="22" rx="11" fill="#EEEDFC"/>
+  <text x="70" y="93" font-family="-apple-system, BlinkMacSystemFont, 'Inter', sans-serif" font-size="10" font-weight="700" fill="#5856D6" text-anchor="middle">ПОД ЗАКАЗ</text>
+  
+  <!-- REALISTIC SMARTPHONE RENDER (Nothing Phone 2) -->
+  <g id="phone-render">
+    <!-- Phone Outer Shell -->
+    <rect x="144" y="82" width="105" height="195" rx="16" fill="#0F172A" stroke="#334155" stroke-width="2"/>
+    <!-- Phone Screen with Gradient Wallpaper -->
+    <rect x="148" y="86" width="97" height="187" rx="12" fill="url(#detailPhoneScreen)"/>
+    <!-- Punch-Hole Camera -->
+    <circle cx="196" cy="95" r="3.5" fill="#000000" stroke="#1E293B" stroke-width="1"/>
+    <!-- Minimalist Lock Screen Clock -->
+    <text x="196" y="130" font-family="-apple-system, BlinkMacSystemFont, 'Inter', sans-serif" font-size="22" font-weight="800" fill="#FFFFFF" text-anchor="middle" opacity="0.9">12:30</text>
+    <text x="196" y="146" font-family="-apple-system, BlinkMacSystemFont, 'Inter', sans-serif" font-size="10" font-weight="500" fill="#A5B4FC" text-anchor="middle">Пн, 16 ноября</text>
+    <!-- Geometric Graphic element on display -->
+    <circle cx="196" cy="190" r="24" fill="none" stroke="#6366F1" stroke-width="2" stroke-dasharray="4 4"/>
+    <circle cx="196" cy="190" r="14" fill="#4F46E5" opacity="0.6"/>
+  </g>
+
+  <!-- Carousel Pagination Dots -->
+  <circle cx="185" cy="312" r="4" fill="#5856D6"/>
+  <circle cx="197" cy="312" r="3" fill="#CBD5E1"/>
+  <circle cx="207" cy="312" r="3" fill="#CBD5E1"/>
+
+  <!-- Category & Title -->
+  <text x="16" y="356" font-family="-apple-system, BlinkMacSystemFont, 'Inter', sans-serif" font-size="12" font-weight="700" fill="#5856D6" letter-spacing="0.5">СМАРТФОНЫ И ГАДЖЕТЫ</text>
+  <text x="16" y="382" font-family="-apple-system, BlinkMacSystemFont, 'Inter', sans-serif" font-size="20" font-weight="800" fill="#0F172A">Nothing Phone (2) 12/256GB</text>
+
+  <!-- Pricing -->
+  <text x="16" y="416" font-family="-apple-system, BlinkMacSystemFont, 'Inter', sans-serif" font-size="24" font-weight="900" fill="#0F172A">56 990 ₽</text>
+  <text x="136" y="416" font-family="-apple-system, BlinkMacSystemFont, 'Inter', sans-serif" font-size="16" font-weight="500" fill="#94A3B8" text-decoration="line-through">62 990 ₽</text>
+
+  <!-- Preorder Explanatory Banner -->
+  <rect x="16" y="434" width="361" height="52" rx="14" fill="#F5F3FF" stroke="#DDD6FE" stroke-width="1"/>
+  <text x="32" y="455" font-family="-apple-system, BlinkMacSystemFont, 'Inter', sans-serif" font-size="12" font-weight="700" fill="#5856D6">Товар доставляется под заказ (3-5 дней)</text>
+  <text x="32" y="473" font-family="-apple-system, BlinkMacSystemFont, 'Inter', sans-serif" font-size="11" fill="#6D28D9">Оставьте заявку «Хочу такой» — магазин привезет товар для вас</text>
+
+  <!-- Specs Header -->
+  <text x="16" y="516" font-family="-apple-system, BlinkMacSystemFont, 'Inter', sans-serif" font-size="14" font-weight="700" fill="#0F172A">Характеристики</text>
+
+  <!-- Specs Rows -->
+  <g id="specs-table">
+    <line x1="16" y1="530" x2="377" y2="530" stroke="#F1F5F9" stroke-width="1"/>
+    <text x="16" y="548" font-family="-apple-system, BlinkMacSystemFont, 'Inter', sans-serif" font-size="12" fill="#64748B">Процессор</text>
+    <text x="377" y="548" font-family="-apple-system, BlinkMacSystemFont, 'Inter', sans-serif" font-size="12" font-weight="600" fill="#0F172A" text-anchor="end">Snapdragon 8+ Gen 1</text>
+
+    <line x1="16" y1="560" x2="377" y2="560" stroke="#F1F5F9" stroke-width="1"/>
+    <text x="16" y="578" font-family="-apple-system, BlinkMacSystemFont, 'Inter', sans-serif" font-size="12" fill="#64748B">Память</text>
+    <text x="377" y="578" font-family="-apple-system, BlinkMacSystemFont, 'Inter', sans-serif" font-size="12" font-weight="600" fill="#0F172A" text-anchor="end">12 ГБ ОЗУ / 256 ГБ</text>
+
+    <line x1="16" y1="590" x2="377" y2="590" stroke="#F1F5F9" stroke-width="1"/>
+    <text x="16" y="608" font-family="-apple-system, BlinkMacSystemFont, 'Inter', sans-serif" font-size="12" fill="#64748B">Дисплей</text>
+    <text x="377" y="608" font-family="-apple-system, BlinkMacSystemFont, 'Inter', sans-serif" font-size="12" font-weight="600" fill="#0F172A" text-anchor="end">6.7" OLED LTPO 120Hz</text>
+
+    <line x1="16" y1="620" x2="377" y2="620" stroke="#F1F5F9" stroke-width="1"/>
+    <text x="16" y="638" font-family="-apple-system, BlinkMacSystemFont, 'Inter', sans-serif" font-size="12" fill="#64748B">Особенность</text>
+    <text x="377" y="638" font-family="-apple-system, BlinkMacSystemFont, 'Inter', sans-serif" font-size="12" font-weight="600" fill="#5856D6" text-anchor="end">Glyph Interface 2.0</text>
+  </g>
+
+  <!-- Description -->
+  <text x="16" y="674" font-family="-apple-system, BlinkMacSystemFont, 'Inter', sans-serif" font-size="14" font-weight="700" fill="#0F172A">Описание</text>
+  <text x="16" y="694" font-family="-apple-system, BlinkMacSystemFont, 'Inter', sans-serif" font-size="12" fill="#475569">Прозрачный корпус с интерфейсом Glyph Interface из светодиодов.</text>
+  <text x="16" y="710" font-family="-apple-system, BlinkMacSystemFont, 'Inter', sans-serif" font-size="12" fill="#475569">Двойная камера 50 Мп с сенсором Sony IMX890 и автономность на весь день.</text>
+
+  <!-- Bottom CTA: Хочу такой -->
+  <rect x="0" y="744" width="393" height="108" fill="#FFFFFF"/>
+  <line x1="0" y1="744" x2="393" y2="744" stroke="#F1F5F9" stroke-width="1"/>
+  
+  <rect x="16" y="760" width="361" height="52" rx="16" fill="#5856D6"/>
+  <text x="196" y="792" font-family="-apple-system, BlinkMacSystemFont, 'Inter', sans-serif" font-size="15" font-weight="700" fill="#FFFFFF" text-anchor="middle">Оставить заявку «Хочу такой» 🔥</text>
+</svg>

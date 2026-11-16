@@ -1,0 +1,57 @@
+<svg width="680" height="260" viewBox="0 0 680 260" fill="none" xmlns="http://www.w3.org/2000/svg">
+  <!-- Sticker 1: Кнопка «Хочу такой» -->
+  <g id="sticker-1">
+    <rect x="0" y="0" width="210" height="240" rx="4" fill="#FEF08A" stroke="#FDE047" stroke-width="1"/>
+    <rect x="12" y="12" width="60" height="20" rx="10" fill="#CA8A04"/>
+    <text x="42" y="26" font-family="-apple-system, BlinkMacSystemFont, 'Inter', sans-serif" font-size="10" font-weight="700" fill="#FFFFFF" text-anchor="middle">ВАЖНО (ТЗ)</text>
+    
+    <text x="12" y="52" font-family="-apple-system, BlinkMacSystemFont, 'Inter', sans-serif" font-size="13" font-weight="800" fill="#713F12">Кнопка «Хочу такой»</text>
+    
+    <text x="12" y="74" font-family="-apple-system, BlinkMacSystemFont, 'Inter', sans-serif" font-size="11" fill="#854D0E">Для товаров со статусом</text>
+    <text x="12" y="90" font-family="-apple-system, BlinkMacSystemFont, 'Inter', sans-serif" font-size="11" font-weight="700" fill="#854D0E">«ПОД ЗАКАЗ»</text>
+    <text x="12" y="106" font-family="-apple-system, BlinkMacSystemFont, 'Inter', sans-serif" font-size="11" fill="#854D0E">кнопка меняется на</text>
+    <text x="12" y="122" font-family="-apple-system, BlinkMacSystemFont, 'Inter', sans-serif" font-size="11" font-weight="700" fill="#854D0E">«Хочу такой 🔥».</text>
+    
+    <text x="12" y="146" font-family="-apple-system, BlinkMacSystemFont, 'Inter', sans-serif" font-size="11" fill="#854D0E">Открывает модалку сбора</text>
+    <text x="12" y="162" font-family="-apple-system, BlinkMacSystemFont, 'Inter', sans-serif" font-size="11" fill="#854D0E">контактов. Заявка летит</text>
+    <text x="12" y="178" font-family="-apple-system, BlinkMacSystemFont, 'Inter', sans-serif" font-size="11" fill="#854D0E">в Django Admin для замера</text>
+    <text x="12" y="194" font-family="-apple-system, BlinkMacSystemFont, 'Inter', sans-serif" font-size="11" font-weight="700" fill="#854D0E">спроса перед закупкой.</text>
+  </g>
+
+  <!-- Sticker 2: Доставка и оплата -->
+  <g id="sticker-2">
+    <rect x="230" y="0" width="210" height="240" rx="4" fill="#FEF08A" stroke="#FDE047" stroke-width="1"/>
+    <rect x="242" y="12" width="80" height="20" rx="10" fill="#CA8A04"/>
+    <text x="282" y="26" font-family="-apple-system, BlinkMacSystemFont, 'Inter', sans-serif" font-size="10" font-weight="700" fill="#FFFFFF" text-anchor="middle">БИЗНЕС-ПРАВИЛО</text>
+    
+    <text x="242" y="52" font-family="-apple-system, BlinkMacSystemFont, 'Inter', sans-serif" font-size="13" font-weight="800" fill="#713F12">Оплата в регионы</text>
+    
+    <text x="242" y="74" font-family="-apple-system, BlinkMacSystemFont, 'Inter', sans-serif" font-size="11" fill="#854D0E">При выборе способа</text>
+    <text x="242" y="90" font-family="-apple-system, BlinkMacSystemFont, 'Inter', sans-serif" font-size="11" font-weight="700" fill="#854D0E">«Отправка в регионы»</text>
+    <text x="242" y="106" font-family="-apple-system, BlinkMacSystemFont, 'Inter', sans-serif" font-size="11" fill="#854D0E">вариант «При получении»</text>
+    <text x="242" y="122" font-family="-apple-system, BlinkMacSystemFont, 'Inter', sans-serif" font-size="11" font-weight="700" fill="#DC2626">БЛОКИРУЕТСЯ!</text>
+    
+    <text x="242" y="146" font-family="-apple-system, BlinkMacSystemFont, 'Inter', sans-serif" font-size="11" fill="#854D0E">Доступна строго 100%</text>
+    <text x="242" y="162" font-family="-apple-system, BlinkMacSystemFont, 'Inter', sans-serif" font-size="11" font-weight="700" fill="#854D0E">онлайн-оплата картой,</text>
+    <text x="242" y="178" font-family="-apple-system, BlinkMacSystemFont, 'Inter', sans-serif" font-size="11" fill="#854D0E">чтобы магазин не нес</text>
+    <text x="242" y="194" font-family="-apple-system, BlinkMacSystemFont, 'Inter', sans-serif" font-size="11" fill="#854D0E">убытки от невыкупа.</text>
+  </g>
+
+  <!-- Sticker 3: Банковский вебхук -->
+  <g id="sticker-3">
+    <rect x="460" y="0" width="210" height="240" rx="4" fill="#FEF08A" stroke="#FDE047" stroke-width="1"/>
+    <rect x="472" y="12" width="70" height="20" rx="10" fill="#CA8A04"/>
+    <text x="507" y="26" font-family="-apple-system, BlinkMacSystemFont, 'Inter', sans-serif" font-size="10" font-weight="700" fill="#FFFFFF" text-anchor="middle">ИНТЕГРАЦИЯ</text>
+    
+    <text x="472" y="52" font-family="-apple-system, BlinkMacSystemFont, 'Inter', sans-serif" font-size="13" font-weight="800" fill="#713F12">Заглушка банка</text>
+    
+    <text x="472" y="74" font-family="-apple-system, BlinkMacSystemFont, 'Inter', sans-serif" font-size="11" fill="#854D0E">Страница имитирует шлюз</text>
+    <text x="472" y="90" font-family="-apple-system, BlinkMacSystemFont, 'Inter', sans-serif" font-size="11" font-weight="700" fill="#854D0E">интернет-эквайринга.</text>
+    
+    <text x="472" y="114" font-family="-apple-system, BlinkMacSystemFont, 'Inter', sans-serif" font-size="11" fill="#854D0E">При клике шлет реальный</text>
+    <text x="472" y="130" font-family="-apple-system, BlinkMacSystemFont, 'Inter', sans-serif" font-size="11" font-weight="700" fill="#854D0E">POST Webhook на бэкенд,</text>
+    <text x="472" y="146" font-family="-apple-system, BlinkMacSystemFont, 'Inter', sans-serif" font-size="11" fill="#854D0E">меняет статус на 'paid'</text>
+    <text x="472" y="162" font-family="-apple-system, BlinkMacSystemFont, 'Inter', sans-serif" font-size="11" fill="#854D0E">и возвращает клиента</text>
+    <text x="472" y="178" font-family="-apple-system, BlinkMacSystemFont, 'Inter', sans-serif" font-size="11" fill="#854D0E">обратно в заказ.</text>
+  </g>
+</svg>

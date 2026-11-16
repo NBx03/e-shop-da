@@ -1,0 +1,53 @@
+<svg width="393" height="852" viewBox="0 0 393 852" fill="none" xmlns="http://www.w3.org/2000/svg">
+  <!-- Background -->
+  <rect width="393" height="852" rx="40" fill="#0F172A"/>
+
+  <!-- Bank Header -->
+  <rect width="393" height="54" fill="#1E293B"/>
+  <text x="16" y="34" font-family="-apple-system, BlinkMacSystemFont, 'Inter', sans-serif" font-size="14" font-weight="500" fill="#94A3B8">Отмена</text>
+  <text x="196" y="34" font-family="-apple-system, BlinkMacSystemFont, 'Inter', sans-serif" font-size="15" font-weight="700" fill="#FFFFFF" text-anchor="middle">Банковский терминал</text>
+
+  <!-- Central Card Payment Container -->
+  <rect x="16" y="80" width="361" height="420" rx="24" fill="#1E293B" stroke="#334155" stroke-width="1"/>
+
+  <!-- Card Chip Icon -->
+  <rect x="164" y="104" width="64" height="64" rx="20" fill="#0284C7" opacity="0.15"/>
+  <rect x="176" y="116" width="40" height="40" rx="8" fill="none" stroke="#38BDF8" stroke-width="2.5"/>
+  <line x1="176" y1="136" x2="216" y2="136" stroke="#38BDF8" stroke-width="2"/>
+  <circle cx="188" cy="126" r="3" fill="#38BDF8"/>
+
+  <text x="196" y="196" font-family="-apple-system, BlinkMacSystemFont, 'Inter', sans-serif" font-size="13" font-weight="600" fill="#94A3B8" text-anchor="middle">Оплата заказа #1001</text>
+  <text x="196" y="236" font-family="-apple-system, BlinkMacSystemFont, 'Inter', sans-serif" font-size="32" font-weight="900" fill="#FFFFFF" text-anchor="middle">134 990 ₽</text>
+
+  <!-- Table Details -->
+  <rect x="36" y="260" width="321" height="120" rx="14" fill="#0F172A"/>
+  
+  <text x="52" y="286" font-family="-apple-system, BlinkMacSystemFont, 'Inter', sans-serif" font-size="12" fill="#64748B">Получатель:</text>
+  <text x="341" y="286" font-family="-apple-system, BlinkMacSystemFont, 'Inter', sans-serif" font-size="12" font-weight="600" fill="#F8FAFC" text-anchor="end">ООО «ДА»</text>
+
+  <text x="52" y="316" font-family="-apple-system, BlinkMacSystemFont, 'Inter', sans-serif" font-size="12" fill="#64748B">Покупатель:</text>
+  <text x="341" y="316" font-family="-apple-system, BlinkMacSystemFont, 'Inter', sans-serif" font-size="12" font-weight="600" fill="#F8FAFC" text-anchor="end">Булат</text>
+
+  <text x="52" y="346" font-family="-apple-system, BlinkMacSystemFont, 'Inter', sans-serif" font-size="12" fill="#64748B">Телефон:</text>
+  <text x="341" y="346" font-family="-apple-system, BlinkMacSystemFont, 'Inter', sans-serif" font-size="12" font-weight="600" fill="#F8FAFC" text-anchor="end">+7 (999) 123-45-67</text>
+
+  <!-- Explanatory note -->
+  <text x="196" y="440" font-family="-apple-system, BlinkMacSystemFont, 'Inter', sans-serif" font-size="12" fill="#94A3B8" text-anchor="middle">Тестовый шлюз эмулирует ответ банка</text>
+  <text x="196" y="460" font-family="-apple-system, BlinkMacSystemFont, 'Inter', sans-serif" font-size="12" fill="#94A3B8" text-anchor="middle">и шлет POST webhook с изменением статуса заказа</text>
+
+  <!-- Action 1: Оплата прошла (Success) -->
+  <rect x="16" y="524" width="361" height="54" rx="16" fill="#10B981"/>
+  <text x="196" y="557" font-family="-apple-system, BlinkMacSystemFont, 'Inter', sans-serif" font-size="15" font-weight="700" fill="#FFFFFF" text-anchor="middle">✓ Оплата прошла (Успех)</text>
+
+  <!-- Action 2: Отказ / Отмена (Failed) -->
+  <rect x="16" y="594" width="361" height="54" rx="16" fill="#334155"/>
+  <text x="196" y="627" font-family="-apple-system, BlinkMacSystemFont, 'Inter', sans-serif" font-size="15" font-weight="600" fill="#CBD5E1" text-anchor="middle">✕ Отказ / Отмена платежа</text>
+
+  <!-- Technical Specs Box (at bottom) -->
+  <rect x="16" y="670" width="361" height="142" rx="16" fill="#1E293B" stroke="#334155" stroke-width="1"/>
+  <text x="32" y="698" font-family="-apple-system, BlinkMacSystemFont, 'Inter', sans-serif" font-size="12" font-weight="700" fill="#38BDF8">Спецификация интеграции (ТЗ):</text>
+  <text x="32" y="722" font-family="monospace" font-size="11" fill="#E2E8F0">• POST /orders/payment/webhook/</text>
+  <text x="32" y="742" font-family="monospace" font-size="11" fill="#E2E8F0">• Payload: {"order_id":"...", "status":"success"}</text>
+  <text x="32" y="762" font-family="monospace" font-size="11" fill="#E2E8F0">• Бэкенд переводит заказ в статус 'paid'</text>
+  <text x="32" y="782" font-family="monospace" font-size="11" fill="#E2E8F0">• Бот шлет уведомление магазину и покупателю</text>
+</svg>

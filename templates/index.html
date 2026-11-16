@@ -1,21 +1,21 @@
 {% extends 'base.html' %}
 
-{% block title %}VoltStore — Электроника в Telegram{% endblock %}
+{% block title %}ДА! — Магазин электроники в Telegram{% endblock %}
 
 {% block content %}
 <div class="max-w-4xl mx-auto px-3 sm:px-6 w-full">
   
   <!-- Header / Nav -->
-  <header class="sticky top-0 z-30 pt-3 pb-3 tg-card backdrop-blur-md bg-opacity-90 border-b border-slate-200/60 -mx-3 px-4 sm:mx-0 sm:px-0 sm:bg-transparent sm:border-none">
+  <header class="sticky top-0 z-30 pt-3 pb-3 tg-card backdrop-blur-md bg-opacity-95 border-b border-slate-200/80 -mx-3 px-4 sm:mx-0 sm:px-0 sm:bg-transparent sm:border-none">
     <div class="flex items-center justify-between gap-3">
-      <!-- Logo -->
-      <div class="flex items-center gap-2">
-        <div class="w-9 h-9 rounded-xl bg-blue-600 text-white flex items-center justify-center font-black text-lg shadow-sm">
-          ⚡
+      <!-- Logo: ДА! -->
+      <div class="flex items-center gap-2.5">
+        <div class="w-10 h-10 rounded-xl bg-blue-600 text-white flex items-center justify-center font-black text-base shadow-sm tracking-tight">
+          ДА!
         </div>
         <div>
-          <span class="font-extrabold text-lg tracking-tight">VoltStore</span>
-          <span class="block text-[10px] uppercase font-bold text-blue-600 tracking-wider">Электроника</span>
+          <span class="font-black text-xl tracking-tight text-slate-900 block leading-none">ДА!</span>
+          <span class="text-[10px] uppercase font-bold text-blue-600 tracking-wider">Магазин электроники</span>
         </div>
       </div>
 
@@ -23,7 +23,7 @@
       <div class="flex items-center gap-2">
         <button
           onclick="toggleCart(true)"
-          class="relative p-2.5 rounded-xl bg-blue-50 text-blue-700 hover:bg-blue-100 transition-colors flex items-center gap-1.5 font-semibold text-sm">
+          class="relative p-2.5 rounded-xl bg-blue-50 text-blue-700 hover:bg-blue-100 transition-colors flex items-center gap-1.5 font-bold text-sm">
           <i data-lucide="shopping-bag" class="w-5 h-5"></i>
           <span class="hidden sm:inline">Корзина</span>
           <span id="cart-badge" class="hidden min-w-[20px] h-5 px-1.5 rounded-full bg-blue-600 text-white text-xs font-bold items-center justify-center">0</span>
@@ -31,44 +31,44 @@
       </div>
     </div>
 
-    <!-- Search Input -->
+    <!-- Search Input matching Figma -->
     <div class="mt-3 relative">
-      <i data-lucide="search" class="w-4 h-4 absolute left-3.5 top-1/2 -translate-y-1/2 tg-hint"></i>
+      <i data-lucide="search" class="w-4 h-4 absolute left-3.5 top-1/2 -translate-y-1/2 text-slate-400"></i>
       <input
         type="text"
         id="search-input"
-        placeholder="Поиск по 25+ гаджетам (iPhone, MacBook, Sony...)"
-        class="w-full pl-10 pr-4 py-2.5 text-sm rounded-xl border border-slate-200 bg-slate-50 focus:bg-white focus:outline-none focus:ring-2 focus:ring-blue-500 transition-all placeholder:text-slate-400"
+        placeholder="Поиск техники (iPhone, MacBook, Sony)..."
+        class="w-full pl-10 pr-4 py-2.5 text-sm rounded-xl border border-slate-200 bg-white focus:outline-none focus:ring-2 focus:ring-blue-500 transition-all placeholder:text-slate-400 shadow-2xs"
         oninput="handleSearch(this.value)">
     </div>
 
-    <!-- Category Pills Slider -->
+    <!-- Category Pills Slider matching Figma -->
     <div class="mt-3 flex items-center gap-2 overflow-x-auto no-scrollbar py-1">
       <button
         onclick="selectCategory('all')"
-        class="category-btn active px-3.5 py-1.5 rounded-full text-xs font-semibold whitespace-nowrap transition-all bg-blue-600 text-white shadow-sm"
+        class="category-btn active px-4 py-1.5 rounded-full text-xs font-semibold whitespace-nowrap transition-all bg-[#2481CC] text-white shadow-sm"
         data-cat-id="all">
-        Все товары
+        Все
       </button>
       {% for cat in categories %}
         <button
           onclick="selectCategory('{{ cat.id }}')"
-          class="category-btn px-3.5 py-1.5 rounded-full text-xs font-semibold whitespace-nowrap transition-all bg-slate-100 hover:bg-slate-200 text-slate-700"
+          class="category-btn px-4 py-1.5 rounded-full text-xs font-semibold whitespace-nowrap transition-all bg-white hover:bg-slate-50 text-slate-700 border border-slate-200 shadow-2xs"
           data-cat-id="{{ cat.id }}">
           {{ cat.name }}
         </button>
       {% endfor %}
     </div>
 
-    <!-- Sorting -->
-    <div class="mt-2 flex items-center justify-between text-xs text-slate-500">
-      <span id="products-count-label">Загрузка каталога...</span>
+    <!-- Section Header matching Figma -->
+    <div class="mt-3.5 flex items-center justify-between text-xs">
+      <h2 class="text-base font-extrabold text-slate-900 tracking-tight">Популярные гаджеты</h2>
       <div class="flex items-center gap-1">
-        <span>Сортировка:</span>
+        <span class="text-blue-600 font-semibold cursor-pointer">Сортировка ↓</span>
         <select id="sort-select" onchange="handleSort(this.value)" class="bg-transparent font-medium text-slate-800 focus:outline-none cursor-pointer">
-          <option value="popular">По популярности</option>
-          <option value="price_asc">Сначала дешевле</option>
-          <option value="price_desc">Сначала дороже</option>
+          <option value="popular">По умолчанию</option>
+          <option value="price_asc">Цена ↑</option>
+          <option value="price_desc">Цена ↓</option>
         </select>
       </div>
     </div>
@@ -89,6 +89,12 @@
       <p class="text-xs tg-hint">Попробуйте изменить поисковый запрос или выбрать другой раздел</p>
     </div>
   </main>
+
+  <!-- Sticky Bottom Cart Bar matching Figma -->
+  <div id="bottom-cart-bar" onclick="toggleCart(true)" class="fixed bottom-4 left-3 right-3 sm:left-auto sm:right-auto sm:w-[420px] max-w-md mx-auto z-40 bg-gradient-to-r from-[#2481CC] to-[#1B6CA8] text-white py-3.5 px-5 rounded-2xl shadow-xl hidden items-center justify-between font-bold cursor-pointer transition-all active:scale-[0.98]">
+    <span id="bottom-cart-count" class="text-sm font-bold">Корзина (0)</span>
+    <span id="bottom-cart-total" class="text-sm font-extrabold">0 ₽ →</span>
+  </div>
 </div>
 
 <!-- ================= PRODUCT DETAIL MODAL ================= -->
@@ -154,7 +160,7 @@
       <input type="hidden" id="preorder-product-id">
       <div>
         <label class="block text-xs font-medium text-slate-700 mb-1">Ваше имя *</label>
-        <input type="text" id="preorder-name" required placeholder="Константин" class="w-full px-3 py-2 text-sm rounded-xl border border-slate-200 focus:ring-2 focus:ring-blue-500 focus:outline-none">
+        <input type="text" id="preorder-name" required placeholder="Булат" class="w-full px-3 py-2 text-sm rounded-xl border border-slate-200 focus:ring-2 focus:ring-blue-500 focus:outline-none">
       </div>
       <div>
         <label class="block text-xs font-medium text-slate-700 mb-1">Номер телефона *</label>
@@ -205,7 +211,7 @@
       <form id="checkout-form" onsubmit="handleCheckoutSubmit(event)" class="space-y-4">
         <div>
           <label class="block text-xs font-semibold text-slate-700 mb-1">Имя получателя *</label>
-          <input type="text" id="order-name" required placeholder="Иван Иванов" class="w-full px-3 py-2 text-sm rounded-xl border border-slate-200 focus:ring-2 focus:ring-blue-500 focus:outline-none">
+          <input type="text" id="order-name" required placeholder="Булат" class="w-full px-3 py-2 text-sm rounded-xl border border-slate-200 focus:ring-2 focus:ring-blue-500 focus:outline-none">
         </div>
 
         <div>
@@ -232,7 +238,7 @@
             <label class="cursor-pointer">
               <input type="radio" name="delivery" value="postal" onchange="updateDeliveryUI(this.value)" class="peer sr-only">
               <div class="p-2.5 rounded-xl border border-slate-200 peer-checked:border-blue-600 peer-checked:bg-blue-50 peer-checked:text-blue-700 font-medium">
-                В регионы
+                В регионы (СДЭК)
               </div>
             </label>
           </div>
@@ -263,7 +269,7 @@
                 <span class="tg-hint text-[11px]">Наличными или картой курьеру / в пункте</span>
               </div>
             </label>
-            <p id="cod-hint" class="text-[11px] text-amber-600 hidden">⚠️ При отправке в регионы доступна только онлайн-оплата.</p>
+            <p id="cod-hint" class="text-[11px] text-amber-600 font-medium hidden">⚠️ При отправке в регионы доступна только онлайн-оплата картой / СБП.</p>
           </div>
         </div>
 

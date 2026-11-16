@@ -1,5 +1,5 @@
 /**
- * VoltStore - Telegram Mini App & Browser Frontend Client
+ * ДА! - Telegram Mini App & Browser Frontend Client
  */
 
 let allProducts = [];
@@ -53,7 +53,7 @@ async function loadProducts() {
   }
 }
 
-// Render product grid
+// Render product grid matching Figma
 function renderProducts(products) {
   const grid = document.getElementById('products-grid');
   const emptyState = document.getElementById('empty-state');
@@ -68,23 +68,22 @@ function renderProducts(products) {
   grid.innerHTML = products.map(prod => {
     const inCartQty = cart[prod.id]?.quantity || 0;
     
-    // Status badges
-    let statusClass = 'bg-emerald-500 text-white';
-    if (prod.status === 'on_the_way') statusClass = 'bg-amber-500 text-white';
-    if (prod.status === 'preorder') statusClass = 'bg-indigo-600 text-white';
+    // Status badges matching Figma iOS style
+    let statusClass = 'bg-[#DCFCE7] text-[#16A34A]';
+    if (prod.status === 'on_the_way') statusClass = 'bg-[#FEF3C7] text-[#D97706]';
+    if (prod.status === 'preorder') statusClass = 'bg-[#EEEDFC] text-[#5856D6]';
 
     const oldPriceHtml = prod.old_price 
       ? `<span class="text-[11px] text-slate-400 line-through">${formatPrice(prod.old_price)} ₽</span>` 
       : '';
 
-    // Action button
+    // Action button matching Figma
     let actionBtnHtml = '';
     if (prod.status === 'preorder') {
       actionBtnHtml = `
         <button onclick="event.stopPropagation(); openPreorderModal(${prod.id}, '${escapeHtml(prod.title)}')"
-          class="w-full py-2 px-2.5 rounded-xl bg-indigo-50 hover:bg-indigo-100 text-indigo-700 text-xs font-bold transition flex items-center justify-center gap-1">
-          <i data-lucide="flame" class="w-3.5 h-3.5"></i>
-          <span>Хочу такой</span>
+          class="w-full py-2 px-2.5 rounded-xl bg-[#EEEDFC] hover:bg-indigo-100 text-[#5856D6] border border-[#5856D6]/40 text-xs font-bold transition flex items-center justify-center gap-1 active:scale-95">
+          <span>Хочу такой 🔥</span>
         </button>
       `;
     } else if (inCartQty > 0) {
@@ -98,7 +97,7 @@ function renderProducts(products) {
     } else {
       actionBtnHtml = `
         <button onclick="event.stopPropagation(); addToCart(${prod.id})"
-          class="w-full py-2 px-2.5 rounded-xl bg-blue-600 hover:bg-blue-700 text-white text-xs font-bold transition shadow-xs flex items-center justify-center gap-1 active:scale-95">
+          class="w-full py-2 px-2.5 rounded-xl bg-[#2481CC] hover:bg-blue-700 text-white text-xs font-bold transition shadow-xs flex items-center justify-center gap-1 active:scale-95">
           <i data-lucide="shopping-bag" class="w-3.5 h-3.5"></i>
           <span>В корзину</span>
         </button>
@@ -106,22 +105,22 @@ function renderProducts(products) {
     }
 
     return `
-      <div onclick="openProductModal(${prod.id})" class="tg-card rounded-2xl p-3 border border-slate-200/60 shadow-xs hover:shadow-md transition cursor-pointer flex flex-col justify-between group">
+      <div onclick="openProductModal(${prod.id})" class="tg-card rounded-2xl p-3 border border-slate-200/80 shadow-xs hover:shadow-md transition cursor-pointer flex flex-col justify-between group bg-white">
         <div>
-          <!-- Thumbnail -->
-          <div class="relative aspect-square rounded-xl bg-slate-100 overflow-hidden mb-2.5">
-            <img src="${prod.main_image}" alt="${escapeHtml(prod.title)}" loading="lazy" class="w-full h-full object-cover group-hover:scale-105 transition duration-300">
-            <span class="absolute top-2 left-2 px-2 py-0.5 rounded-full text-[10px] font-bold ${statusClass}">
-              ${prod.status_label}
+          <!-- Thumbnail with status badge -->
+          <div class="relative aspect-square rounded-xl bg-[#F8FAFC] border border-slate-100 overflow-hidden mb-2.5 p-2 flex items-center justify-center">
+            <img src="${prod.main_image}" alt="${escapeHtml(prod.title)}" loading="lazy" class="w-full h-full object-contain group-hover:scale-105 transition duration-300">
+            <span class="absolute top-2 left-2 px-2 py-0.5 rounded-full text-[9px] font-bold ${statusClass}">
+              ${prod.status_label.toUpperCase()}
             </span>
           </div>
 
           <!-- Category and Title -->
-          <span class="text-[10px] font-semibold text-blue-600 uppercase tracking-wider block">${prod.category_name}</span>
-          <h3 class="text-xs font-bold text-slate-800 line-clamp-2 mt-0.5 leading-snug">${escapeHtml(prod.title)}</h3>
+          <span class="text-[9px] font-bold text-blue-600 uppercase tracking-wider block">${prod.category_name}</span>
+          <h3 class="text-xs font-bold text-slate-900 line-clamp-1 mt-0.5 leading-snug">${escapeHtml(prod.title)}</h3>
         </div>
 
-        <div class="mt-3 space-y-2">
+        <div class="mt-2.5 space-y-2">
           <!-- Price -->
           <div>
             <div class="text-sm font-black text-slate-900">${formatPrice(prod.price)} ₽</div>
@@ -138,15 +137,15 @@ function renderProducts(products) {
   if (window.lucide) lucide.createIcons();
 }
 
-// Category tabs
+// Category tabs matching Figma
 function selectCategory(catId) {
   activeCategory = catId;
   document.querySelectorAll('.category-btn').forEach(btn => {
     const match = btn.getAttribute('data-cat-id') === String(catId);
     if (match) {
-      btn.className = 'category-btn px-3.5 py-1.5 rounded-full text-xs font-semibold whitespace-nowrap transition-all bg-blue-600 text-white shadow-sm';
+      btn.className = 'category-btn px-4 py-1.5 rounded-full text-xs font-semibold whitespace-nowrap transition-all bg-[#2481CC] text-white shadow-sm';
     } else {
-      btn.className = 'category-btn px-3.5 py-1.5 rounded-full text-xs font-semibold whitespace-nowrap transition-all bg-slate-100 hover:bg-slate-200 text-slate-700';
+      btn.className = 'category-btn px-4 py-1.5 rounded-full text-xs font-semibold whitespace-nowrap transition-all bg-white hover:bg-slate-50 text-slate-700 border border-slate-200 shadow-2xs';
     }
   });
   loadProducts();
@@ -191,8 +190,8 @@ async function openProductModal(prodIdOrSlug) {
     const badge = document.getElementById('modal-status-badge');
     badge.textContent = prod.status_label;
     badge.className = `absolute top-3 left-3 px-2.5 py-1 rounded-full text-[11px] font-bold shadow-sm ${
-      prod.status === 'in_stock' ? 'bg-emerald-500 text-white' :
-      prod.status === 'on_the_way' ? 'bg-amber-500 text-white' : 'bg-indigo-600 text-white'
+      prod.status === 'in_stock' ? 'bg-emerald-100 text-emerald-700' :
+      prod.status === 'on_the_way' ? 'bg-amber-100 text-amber-700' : 'bg-indigo-100 text-indigo-700'
     }`;
 
     document.getElementById('modal-desc').textContent = prod.description;
@@ -331,13 +330,31 @@ function saveCart() {
 
 function updateCartBadge() {
   const badge = document.getElementById('cart-badge');
+  const bottomBar = document.getElementById('bottom-cart-bar');
+  const bottomCount = document.getElementById('bottom-cart-count');
+  const bottomTotal = document.getElementById('bottom-cart-total');
+
   const totalCount = Object.values(cart).reduce((sum, itm) => sum + itm.quantity, 0);
+  const totalAmount = Object.values(cart).reduce((sum, itm) => sum + (itm.price * itm.quantity), 0);
+
   if (totalCount > 0) {
-    badge.textContent = totalCount;
-    badge.classList.remove('hidden');
-    badge.classList.add('flex');
+    if (badge) {
+      badge.textContent = totalCount;
+      badge.classList.remove('hidden');
+      badge.classList.add('flex');
+    }
+    if (bottomBar) {
+      bottomBar.classList.remove('hidden');
+      bottomBar.classList.add('flex');
+      if (bottomCount) bottomCount.textContent = `Корзина (${totalCount})`;
+      if (bottomTotal) bottomTotal.textContent = `${formatPrice(totalAmount)} ₽ →`;
+    }
   } else {
-    badge.classList.add('hidden');
+    if (badge) badge.classList.add('hidden');
+    if (bottomBar) {
+      bottomBar.classList.add('hidden');
+      bottomBar.classList.remove('flex');
+    }
   }
 }
 
