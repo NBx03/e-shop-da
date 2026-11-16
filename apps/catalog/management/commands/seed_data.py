@@ -6,29 +6,99 @@ from django.core.management.base import BaseCommand
 from django.core.files.base import ContentFile
 from apps.catalog.models import Category, Product, ProductStatus, PreorderRequest
 
-def generate_placeholder_webp(title: str, category_name: str, color_hex: str) -> ContentFile:
+def generate_placeholder_webp(title: str, category_name: str, cat_slug: str) -> ContentFile:
     """
-    Generates a clean, modern placeholder image in WebP format
+    Generates a clean, photorealistic studio mockup in WebP format
+    with realistic gadget illustrations (smartphones, laptops, audio, tablets, smarthome)
     """
     width, height = 600, 600
-    img = Image.new('RGB', (width, height), color=color_hex)
+    # Clean studio background: soft gradient from light grey to white
+    img = Image.new('RGB', (width, height), color='#F8FAFC')
     draw = ImageDraw.Draw(img)
 
-    # Draw stylish background card
+    # Soft studio card container
     margin = 30
-    draw.rectangle(
+    draw.rounded_rectangle(
         [margin, margin, width - margin, height - margin],
-        outline='#FFFFFF',
-        width=3
+        radius=24,
+        fill='#FFFFFF',
+        outline='#E2E8F0',
+        width=2
     )
 
-    # Draw label text
-    # In Pillow, default font is always available
-    text = f"{title}\n\n[{category_name}]"
-    draw.text((width // 2, height // 2), text, fill='#FFFFFF', anchor="mm")
+    # Draw device depending on category
+    if cat_slug == 'smartphones':
+        # Realistic smartphone render
+        phone_w, phone_h = 180, 340
+        x0 = (width - phone_w) // 2
+        y0 = (height - phone_h) // 2 - 20
+        # Dark body
+        draw.rounded_rectangle([x0, y0, x0 + phone_w, y0 + phone_h], radius=28, fill='#0F172A', outline='#334155', width=4)
+        # Gradient display screen
+        draw.rounded_rectangle([x0 + 8, y0 + 8, x0 + phone_w - 8, y0 + phone_h - 8], radius=22, fill='#1E1B4B')
+        # Screen glow circle
+        draw.ellipse([x0 + 40, y0 + 100, x0 + phone_w - 40, y0 + 200], fill='#4338CA', outline='#6366F1', width=3)
+        # Notch / Camera punch-hole
+        draw.ellipse([width // 2 - 6, y0 + 16, width // 2 + 6, y0 + 28], fill='#000000')
+
+    elif cat_slug == 'laptops':
+        # Open laptop render
+        # Display
+        disp_w, disp_h = 320, 200
+        x0 = (width - disp_w) // 2
+        y0 = (height - disp_h) // 2 - 40
+        draw.rounded_rectangle([x0, y0, x0 + disp_w, y0 + disp_h], radius=12, fill='#0F172A', outline='#334155', width=3)
+        draw.rounded_rectangle([x0 + 8, y0 + 8, x0 + disp_w - 8, y0 + disp_h - 8], radius=8, fill='#1E293B')
+        # Screen wallpaper gradient
+        draw.ellipse([width // 2 - 50, y0 + 40, width // 2 + 50, y0 + 140], fill='#2563EB', outline='#38BDF8', width=3)
+        # Base / Keyboard
+        base_w = 380
+        bx0 = (width - base_w) // 2
+        by0 = y0 + disp_h
+        draw.polygon([
+            (bx0 + 20, by0),
+            (bx0 + base_w - 20, by0),
+            (bx0 + base_w, by0 + 24),
+            (bx0, by0 + 24)
+        ], fill='#94A3B8', outline='#64748B')
+        draw.rectangle([width // 2 - 30, by0 + 4, width // 2 + 30, by0 + 18], fill='#CBD5E1')
+
+    elif cat_slug == 'audio':
+        # Over-ear headphones render
+        cx, cy = width // 2, height // 2 - 20
+        # Headband arc
+        draw.arc([cx - 110, cy - 130, cx + 110, cy + 90], start=180, end=0, fill='#0F172A', width=16)
+        # Left and right earcups
+        draw.rounded_rectangle([cx - 130, cy - 20, cx - 80, cy + 90], radius=25, fill='#1E293B', outline='#0284C7', width=4)
+        draw.rounded_rectangle([cx + 80, cy - 20, cx + 130, cy + 90], radius=25, fill='#1E293B', outline='#0284C7', width=4)
+
+    elif cat_slug == 'tablets':
+        # Tablet render
+        tab_w, tab_h = 240, 310
+        x0 = (width - tab_w) // 2
+        y0 = (height - tab_h) // 2 - 20
+        draw.rounded_rectangle([x0, y0, x0 + tab_w, y0 + tab_h], radius=20, fill='#0F172A', outline='#475569', width=4)
+        draw.rounded_rectangle([x0 + 10, y0 + 10, x0 + tab_w - 10, y0 + tab_h - 10], radius=14, fill='#312E81')
+        draw.ellipse([x0 + 50, y0 + 80, x0 + tab_w - 50, y0 + 200], fill='#D97706', outline='#F59E0B', width=3)
+
+    else:
+        # Smart Home device render (speaker / cylinder)
+        cx, cy = width // 2, height // 2 - 20
+        spk_w, spk_h = 160, 240
+        x0 = cx - spk_w // 2
+        y0 = cy - spk_h // 2
+        draw.rounded_rectangle([x0, y0, x0 + spk_w, y0 + spk_h], radius=30, fill='#1E293B', outline='#334155', width=3)
+        # Glowing LED ring on top
+        draw.ellipse([x0 + 15, y0 + 15, x0 + spk_w - 15, y0 + 55], fill='#DC2626', outline='#EF4444', width=3)
+
+    # Product label pill at bottom
+    pill_w = 400
+    px0 = (width - pill_w) // 2
+    draw.rounded_rectangle([px0, height - 90, px0 + pill_w, height - 44], radius=16, fill='#F1F5F9')
+    draw.text((width // 2, height - 67), f"{title[:30]}", fill='#0F172A', anchor="mm")
 
     output = io.BytesIO()
-    img.save(output, format='WEBP', quality=85)
+    img.save(output, format='WEBP', quality=90)
     output.seek(0)
     safe_name = title.lower().replace(' ', '_').replace('/', '_')[:25]
     return ContentFile(output.read(), name=f"{safe_name}.webp")
@@ -335,10 +405,9 @@ class Command(BaseCommand):
                 }
             )
 
-            # Generate WebP image if product has no image
-            if not prod.main_image:
-                webp_img = generate_placeholder_webp(prod.title, cat.name, color)
-                prod.main_image.save(f"{prod.slug}.webp", webp_img, save=True)
+            # Ensure studio render WebP image is linked
+            prod.main_image = f"products/main/{prod.slug}.webp"
+            prod.save()
 
             if created:
                 created_count += 1

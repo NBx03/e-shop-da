@@ -6,7 +6,7 @@ let allProducts = [];
 let activeCategory = 'all';
 let searchQuery = '';
 let sortBy = 'popular';
-let cart = JSON.parse(localStorage.getItem('voltstore_cart') || '{}');
+let cart = JSON.parse(localStorage.getItem('da_cart') || localStorage.getItem('voltstore_cart') || '{}');
 
 // Telegram WebApp reference
 const tgApp = window.Telegram?.WebApp;
@@ -69,12 +69,12 @@ function renderProducts(products) {
     const inCartQty = cart[prod.id]?.quantity || 0;
     
     // Status badges matching Figma iOS style
-    let statusClass = 'bg-[#DCFCE7] text-[#16A34A]';
-    if (prod.status === 'on_the_way') statusClass = 'bg-[#FEF3C7] text-[#D97706]';
-    if (prod.status === 'preorder') statusClass = 'bg-[#EEEDFC] text-[#5856D6]';
+    let statusClass = 'bg-[#DCFCE7] text-[#15803D] border border-[#BBF7D0]';
+    if (prod.status === 'on_the_way') statusClass = 'bg-[#FEF3C7] text-[#B45309] border border-[#FDE68A]';
+    if (prod.status === 'preorder') statusClass = 'bg-[#EEEDFC] text-[#4F46E5] border border-[#C7D2FE]';
 
     const oldPriceHtml = prod.old_price 
-      ? `<span class="text-[11px] text-slate-400 line-through">${formatPrice(prod.old_price)} ₽</span>` 
+      ? `<span class="text-xs text-slate-400 line-through">${formatPrice(prod.old_price)} ₽</span>` 
       : '';
 
     // Action button matching Figma
@@ -82,48 +82,48 @@ function renderProducts(products) {
     if (prod.status === 'preorder') {
       actionBtnHtml = `
         <button onclick="event.stopPropagation(); openPreorderModal(${prod.id}, '${escapeHtml(prod.title)}')"
-          class="w-full py-2 px-2.5 rounded-xl bg-[#EEEDFC] hover:bg-indigo-100 text-[#5856D6] border border-[#5856D6]/40 text-xs font-bold transition flex items-center justify-center gap-1 active:scale-95">
+          class="w-full py-2.5 px-3 rounded-xl bg-[#EEEDFC] hover:bg-indigo-100 text-[#4F46E5] border border-indigo-200 text-xs sm:text-sm font-bold transition flex items-center justify-center gap-1.5 active:scale-95 shadow-2xs">
           <span>Хочу такой 🔥</span>
         </button>
       `;
     } else if (inCartQty > 0) {
       actionBtnHtml = `
-        <div onclick="event.stopPropagation()" class="flex items-center justify-between w-full bg-blue-50 rounded-xl p-1">
-          <button onclick="updateCartQuantity(${prod.id}, -1)" class="w-7 h-7 rounded-lg bg-white shadow-xs text-blue-700 font-black flex items-center justify-center hover:bg-slate-50">-</button>
-          <span class="text-xs font-bold text-blue-900">${inCartQty} шт</span>
-          <button onclick="updateCartQuantity(${prod.id}, 1)" class="w-7 h-7 rounded-lg bg-white shadow-xs text-blue-700 font-black flex items-center justify-center hover:bg-slate-50">+</button>
+        <div onclick="event.stopPropagation()" class="flex items-center justify-between w-full bg-blue-50/80 border border-blue-200/80 rounded-xl p-1">
+          <button onclick="updateCartQuantity(${prod.id}, -1)" class="w-7 h-7 rounded-lg bg-white shadow-2xs text-blue-700 font-black flex items-center justify-center hover:bg-slate-50 transition active:scale-90">-</button>
+          <span class="text-xs sm:text-sm font-bold text-blue-900">${inCartQty} шт</span>
+          <button onclick="updateCartQuantity(${prod.id}, 1)" class="w-7 h-7 rounded-lg bg-white shadow-2xs text-blue-700 font-black flex items-center justify-center hover:bg-slate-50 transition active:scale-90">+</button>
         </div>
       `;
     } else {
       actionBtnHtml = `
         <button onclick="event.stopPropagation(); addToCart(${prod.id})"
-          class="w-full py-2 px-2.5 rounded-xl bg-[#2481CC] hover:bg-blue-700 text-white text-xs font-bold transition shadow-xs flex items-center justify-center gap-1 active:scale-95">
-          <i data-lucide="shopping-bag" class="w-3.5 h-3.5"></i>
+          class="w-full py-2.5 px-3 rounded-xl bg-[#2481CC] hover:bg-blue-600 text-white text-xs sm:text-sm font-bold transition shadow-2xs flex items-center justify-center gap-1.5 active:scale-95">
+          <i data-lucide="shopping-bag" class="w-4 h-4"></i>
           <span>В корзину</span>
         </button>
       `;
     }
 
     return `
-      <div onclick="openProductModal(${prod.id})" class="tg-card rounded-2xl p-3 border border-slate-200/80 shadow-xs hover:shadow-md transition cursor-pointer flex flex-col justify-between group bg-white">
+      <div onclick="openProductModal(${prod.id})" class="bg-white rounded-2xl p-2.5 sm:p-3.5 border border-slate-200/90 shadow-2xs hover:shadow-md transition-all flex flex-col justify-between group cursor-pointer">
         <div>
-          <!-- Thumbnail with status badge -->
-          <div class="relative aspect-square rounded-xl bg-[#F8FAFC] border border-slate-100 overflow-hidden mb-2.5 p-2 flex items-center justify-center">
-            <img src="${prod.main_image}" alt="${escapeHtml(prod.title)}" loading="lazy" class="w-full h-full object-contain group-hover:scale-105 transition duration-300">
-            <span class="absolute top-2 left-2 px-2 py-0.5 rounded-full text-[9px] font-bold ${statusClass}">
+          <!-- Thumbnail with studio render and status badge -->
+          <div class="relative aspect-square rounded-xl bg-[#F8FAFC] border border-slate-100 overflow-hidden mb-2 p-2 sm:p-3 flex items-center justify-center">
+            <img src="${prod.main_image}" alt="${escapeHtml(prod.title)}" loading="lazy" class="w-full h-full object-contain group-hover:scale-105 transition-transform duration-300">
+            <span class="absolute top-1.5 left-1.5 px-2 py-0.5 rounded-full text-[9px] sm:text-[10px] font-bold shadow-2xs ${statusClass}">
               ${prod.status_label.toUpperCase()}
             </span>
           </div>
 
           <!-- Category and Title -->
-          <span class="text-[9px] font-bold text-blue-600 uppercase tracking-wider block">${prod.category_name}</span>
-          <h3 class="text-xs font-bold text-slate-900 line-clamp-1 mt-0.5 leading-snug">${escapeHtml(prod.title)}</h3>
+          <span class="text-[10px] font-bold text-blue-600 uppercase tracking-wider block">${prod.category_name}</span>
+          <h3 class="text-xs sm:text-sm font-bold text-slate-900 line-clamp-2 min-h-[2rem] sm:min-h-[2.5rem] mt-0.5 leading-snug group-hover:text-blue-600 transition-colors">${escapeHtml(prod.title)}</h3>
         </div>
 
-        <div class="mt-2.5 space-y-2">
+        <div class="mt-2 sm:mt-2.5 space-y-2">
           <!-- Price -->
-          <div>
-            <div class="text-sm font-black text-slate-900">${formatPrice(prod.price)} ₽</div>
+          <div class="flex items-baseline gap-1.5 flex-wrap">
+            <span class="text-sm sm:text-base font-black text-slate-900 tracking-tight">${formatPrice(prod.price)} ₽</span>
             ${oldPriceHtml}
           </div>
 
@@ -324,7 +324,7 @@ function updateCartQuantity(prodId, delta) {
 }
 
 function saveCart() {
-  localStorage.setItem('voltstore_cart', JSON.stringify(cart));
+  localStorage.setItem('da_cart', JSON.stringify(cart));
   updateCartBadge();
 }
 

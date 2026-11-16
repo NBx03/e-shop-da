@@ -3,57 +3,45 @@
 {% block title %}ДА! — Магазин электроники в Telegram{% endblock %}
 
 {% block content %}
-<div class="max-w-4xl mx-auto px-3 sm:px-6 w-full">
-  
-  <!-- Header / Nav -->
-  <header class="sticky top-0 z-30 pt-3 pb-3 tg-card backdrop-blur-md bg-opacity-95 border-b border-slate-200/80 -mx-3 px-4 sm:mx-0 sm:px-0 sm:bg-transparent sm:border-none">
+<!-- Full-Width Sticky Header: 100% edge-to-edge white on ALL screens, zero side gaps -->
+<header class="sticky top-0 z-30 w-full bg-white border-b border-slate-200/90 shadow-2xs">
+  <div class="max-w-md sm:max-w-xl md:max-w-2xl lg:max-w-4xl mx-auto px-3.5 sm:px-6 pt-3 pb-3">
     <div class="flex items-center justify-between gap-3">
       <!-- Logo: ДА! -->
       <div class="flex items-center gap-2.5">
-        <div class="w-10 h-10 rounded-xl bg-blue-600 text-white flex items-center justify-center font-black text-base shadow-sm tracking-tight">
+        <div class="w-9 h-9 rounded-xl bg-blue-600 text-white flex items-center justify-center font-black text-sm shadow-xs tracking-tight">
           ДА!
         </div>
         <div>
-          <span class="font-black text-xl tracking-tight text-slate-900 block leading-none">ДА!</span>
-          <span class="text-[10px] uppercase font-bold text-blue-600 tracking-wider">Магазин электроники</span>
+          <span class="font-black text-lg tracking-tight text-slate-900 block leading-none">ДА!</span>
+          <span class="text-[9px] uppercase font-bold text-blue-600 tracking-wider">Магазин электроники</span>
         </div>
-      </div>
-
-      <!-- Search & Cart buttons -->
-      <div class="flex items-center gap-2">
-        <button
-          onclick="toggleCart(true)"
-          class="relative p-2.5 rounded-xl bg-blue-50 text-blue-700 hover:bg-blue-100 transition-colors flex items-center gap-1.5 font-bold text-sm">
-          <i data-lucide="shopping-bag" class="w-5 h-5"></i>
-          <span class="hidden sm:inline">Корзина</span>
-          <span id="cart-badge" class="hidden min-w-[20px] h-5 px-1.5 rounded-full bg-blue-600 text-white text-xs font-bold items-center justify-center">0</span>
-        </button>
       </div>
     </div>
 
     <!-- Search Input matching Figma -->
-    <div class="mt-3 relative">
+    <div class="mt-2.5 relative">
       <i data-lucide="search" class="w-4 h-4 absolute left-3.5 top-1/2 -translate-y-1/2 text-slate-400"></i>
       <input
         type="text"
         id="search-input"
         placeholder="Поиск техники (iPhone, MacBook, Sony)..."
-        class="w-full pl-10 pr-4 py-2.5 text-sm rounded-xl border border-slate-200 bg-white focus:outline-none focus:ring-2 focus:ring-blue-500 transition-all placeholder:text-slate-400 shadow-2xs"
+        class="w-full pl-9 pr-4 py-2 text-xs sm:text-sm rounded-xl border border-slate-200 bg-slate-50/60 focus:bg-white focus:outline-none focus:ring-2 focus:ring-blue-500 transition-all placeholder:text-slate-400"
         oninput="handleSearch(this.value)">
     </div>
 
     <!-- Category Pills Slider matching Figma -->
-    <div class="mt-3 flex items-center gap-2 overflow-x-auto no-scrollbar py-1">
+    <div class="mt-2.5 flex items-center gap-1.5 overflow-x-auto no-scrollbar py-0.5">
       <button
         onclick="selectCategory('all')"
-        class="category-btn active px-4 py-1.5 rounded-full text-xs font-semibold whitespace-nowrap transition-all bg-[#2481CC] text-white shadow-sm"
+        class="category-btn active px-3.5 py-1 rounded-full text-xs font-semibold whitespace-nowrap transition-all bg-[#2481CC] text-white shadow-2xs"
         data-cat-id="all">
         Все
       </button>
       {% for cat in categories %}
         <button
           onclick="selectCategory('{{ cat.id }}')"
-          class="category-btn px-4 py-1.5 rounded-full text-xs font-semibold whitespace-nowrap transition-all bg-white hover:bg-slate-50 text-slate-700 border border-slate-200 shadow-2xs"
+          class="category-btn px-3.5 py-1 rounded-full text-xs font-semibold whitespace-nowrap transition-all bg-white hover:bg-slate-50 text-slate-700 border border-slate-200 shadow-2xs"
           data-cat-id="{{ cat.id }}">
           {{ cat.name }}
         </button>
@@ -61,39 +49,46 @@
     </div>
 
     <!-- Section Header matching Figma -->
-    <div class="mt-3.5 flex items-center justify-between text-xs">
-      <h2 class="text-base font-extrabold text-slate-900 tracking-tight">Популярные гаджеты</h2>
+    <div class="mt-3 flex items-center justify-between text-xs">
+      <h2 class="text-sm sm:text-base font-extrabold text-slate-900 tracking-tight">Популярные гаджеты</h2>
       <div class="flex items-center gap-1">
         <span class="text-blue-600 font-semibold cursor-pointer">Сортировка ↓</span>
-        <select id="sort-select" onchange="handleSort(this.value)" class="bg-transparent font-medium text-slate-800 focus:outline-none cursor-pointer">
+        <select id="sort-select" onchange="handleSort(this.value)" class="bg-transparent font-medium text-slate-800 focus:outline-none cursor-pointer text-xs">
           <option value="popular">По умолчанию</option>
           <option value="price_asc">Цена ↑</option>
           <option value="price_desc">Цена ↓</option>
         </select>
       </div>
     </div>
-  </header>
+  </div>
+</header>
 
+<!-- Main Page Container: Optimized for mobile viewport & Android emulation -->
+<div class="max-w-md sm:max-w-xl md:max-w-2xl lg:max-w-4xl mx-auto px-3 sm:px-6 w-full">
+  
   <!-- Products Grid -->
-  <main class="mt-4">
-    <div id="products-grid" class="grid grid-cols-2 sm:grid-cols-3 lg:grid-cols-4 gap-3 sm:gap-4">
+  <main class="mt-3 pb-32">
+    <div id="products-grid" class="grid grid-cols-2 sm:grid-cols-3 lg:grid-cols-4 gap-2.5 sm:gap-4">
       <!-- Injected via JavaScript -->
     </div>
 
     <!-- Empty state -->
     <div id="empty-state" class="hidden text-center py-16 space-y-3">
-      <div class="w-16 h-16 bg-slate-100 rounded-full flex items-center justify-center mx-auto text-slate-400">
-        <i data-lucide="package-search" class="w-8 h-8"></i>
+      <div class="w-14 h-14 bg-slate-100 rounded-full flex items-center justify-center mx-auto text-slate-400">
+        <i data-lucide="package-search" class="w-7 h-7"></i>
       </div>
-      <h3 class="font-bold text-slate-800">Ничего не нашлось</h3>
+      <h3 class="font-bold text-slate-800 text-sm">Ничего не нашлось</h3>
       <p class="text-xs tg-hint">Попробуйте изменить поисковый запрос или выбрать другой раздел</p>
     </div>
   </main>
 
-  <!-- Sticky Bottom Cart Bar matching Figma -->
-  <div id="bottom-cart-bar" onclick="toggleCart(true)" class="fixed bottom-4 left-3 right-3 sm:left-auto sm:right-auto sm:w-[420px] max-w-md mx-auto z-40 bg-gradient-to-r from-[#2481CC] to-[#1B6CA8] text-white py-3.5 px-5 rounded-2xl shadow-xl hidden items-center justify-between font-bold cursor-pointer transition-all active:scale-[0.98]">
-    <span id="bottom-cart-count" class="text-sm font-bold">Корзина (0)</span>
-    <span id="bottom-cart-total" class="text-sm font-extrabold">0 ₽ →</span>
+  <!-- Compact Floating Cart Pill: Sleek Telegram Mobile style, non-intrusive -->
+  <div id="bottom-cart-bar" onclick="toggleCart(true)" class="fixed bottom-4 left-4 right-4 sm:left-auto sm:right-6 sm:bottom-6 z-40 max-w-sm sm:max-w-none mx-auto bg-gradient-to-r from-[#2481CC] to-[#1A6AA6] hover:brightness-105 text-white py-2.5 px-4 sm:px-5 rounded-full shadow-xl hidden items-center justify-between sm:gap-4 font-bold cursor-pointer transition-all active:scale-95">
+    <div class="flex items-center gap-2">
+      <i data-lucide="shopping-bag" class="w-4 h-4 text-white"></i>
+      <span id="bottom-cart-count" class="text-xs sm:text-sm font-bold">Корзина (0)</span>
+    </div>
+    <span id="bottom-cart-total" class="text-xs sm:text-sm font-extrabold tracking-tight">0 ₽ →</span>
   </div>
 </div>
 
@@ -106,9 +101,9 @@
     </button>
 
     <!-- Image preview -->
-    <div class="relative bg-slate-100 rounded-2xl overflow-hidden aspect-square flex items-center justify-center">
-      <img id="modal-img" src="" alt="" class="w-full h-full object-cover">
-      <span id="modal-status-badge" class="absolute top-3 left-3 px-2.5 py-1 rounded-full text-[11px] font-bold text-white shadow-sm"></span>
+    <div class="relative bg-[#F8FAFC] border border-slate-100 rounded-2xl overflow-hidden aspect-square flex items-center justify-center p-6">
+      <img id="modal-img" src="" alt="" class="w-full h-full object-contain">
+      <span id="modal-status-badge" class="absolute top-3 left-3 px-3 py-1 rounded-full text-xs font-bold text-white shadow-xs"></span>
     </div>
 
     <div>
@@ -318,5 +313,5 @@
 {% endblock %}
 
 {% block extra_scripts %}
-<script src="/static/js/app.js"></script>
+<script src="/static/js/app.js?v=1794809000"></script>
 {% endblock %}
