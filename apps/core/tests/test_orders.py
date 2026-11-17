@@ -114,3 +114,33 @@ class OrderCreationTestCase(TestCase):
         # Both return same order ID without duplicating DB record
         self.assertEqual(data1['order_id'], data2['order_id'])
         self.assertEqual(Order.objects.filter(customer_phone='+79998887766').count(), 1)
+
+    def test_invalid_phone_with_letters_rejected(self):
+        payload = {
+            'customer_name': 'Булат',
+            'customer_phone': 'ыффыыф',
+            'delivery_method': DeliveryMethod.PICKUP,
+            'payment_method': PaymentMethod.ONLINE,
+            'items': [{'id': self.product1.id, 'quantity': 1}]
+        }
+        res = self.client.post(
+            reverse('api_create_order'),
+            data=json.dumps(payload),
+            content_type='application/json'
+        )
+        self.assertEqual(res.status_code, 400)
+        self.assertIn("буквы", res.json()['error'])
+
+    def test_preorder_invalid_phone_rejected(self):
+        payload = {
+            'product_id': self.product1.id,
+            'name': 'AAA',
+            'phone': 'ыффыыф'
+        }
+        res = self.client.post(
+            reverse('api_preorder'),
+            data=json.dumps(payload),
+            content_type='application/json'
+        )
+        self.assertEqual(res.status_code, 400)
+        self.assertIn("буквы", res.json()['error'])

@@ -7,6 +7,7 @@ from django.http import JsonResponse, HttpResponseBadRequest
 from django.views.decorators.csrf import csrf_exempt
 from .models import Category, Product, PreorderRequest
 from apps.core.telegram_auth import verify_telegram_init_data
+from apps.core.validators import validate_and_clean_phone
 from apps.telegram_bot.services import notify_admin_preorder
 
 def index_view(request):
@@ -125,6 +126,12 @@ def api_preorder(request):
 
     if not product_id or not customer_name or not customer_phone:
         return JsonResponse({'error': 'Заполните имя и телефон'}, status=400)
+
+    # Валидация и нормализация номера телефона
+    is_phone_valid, normalized_phone, phone_err = validate_and_clean_phone(customer_phone)
+    if not is_phone_valid:
+        return JsonResponse({'error': phone_err}, status=400)
+    customer_phone = normalized_phone
 
     product = get_object_or_404(Product, id=product_id)
 

@@ -75,6 +75,52 @@ function handleTelegramBackClick() {
   }
 }
 
+// Phone mask & validation helpers
+function validatePhone(phone) {
+  if (!phone || typeof phone !== 'string') return false;
+  if (/[a-zA-Zа-яА-ЯёЁ]/.test(phone)) return false;
+  const digits = phone.replace(/\D/g, '');
+  return digits.length >= 10 && digits.length <= 15;
+}
+
+function formatPhoneValue(value) {
+  const digits = value.replace(/\D/g, '');
+  if (!digits) return '';
+
+  let res = '+7 ';
+  let body = digits;
+  if (digits.startsWith('7') || digits.startsWith('8')) {
+    body = digits.substring(1);
+  }
+
+  if (body.length > 0) res += '(' + body.substring(0, 3);
+  if (body.length >= 3) res += ') ' + body.substring(3, 6);
+  if (body.length >= 6) res += '-' + body.substring(6, 8);
+  if (body.length >= 8) res += '-' + body.substring(8, 10);
+
+  return res;
+}
+
+function setupPhoneMask(inputId) {
+  const input = document.getElementById(inputId);
+  if (!input) return;
+
+  input.addEventListener('input', () => {
+    const raw = input.value;
+    const digitsOnly = raw.replace(/\D/g, '');
+    if (!digitsOnly) {
+      input.value = '';
+      return;
+    }
+    input.value = formatPhoneValue(raw);
+    input.classList.remove('border-red-500', 'ring-2', 'ring-red-200');
+  });
+
+  input.addEventListener('focus', () => {
+    input.classList.remove('border-red-500', 'ring-2', 'ring-red-200');
+  });
+}
+
 document.addEventListener('DOMContentLoaded', () => {
   // Expand Mini App to full height
   try {
@@ -86,6 +132,8 @@ document.addEventListener('DOMContentLoaded', () => {
   } catch (e) {}
 
   initUserFromTelegram();
+  setupPhoneMask('preorder-phone');
+  setupPhoneMask('order-phone');
   loadProducts();
   updateCartBadge();
   checkStartAppParam();
@@ -341,9 +389,18 @@ function closePreorderModal() {
 async function handlePreorderSubmit(e) {
   e.preventDefault();
   const prodId = document.getElementById('preorder-product-id').value;
-  const name = document.getElementById('preorder-name').value;
-  const phone = document.getElementById('preorder-phone').value;
+  const name = document.getElementById('preorder-name').value.trim();
+  const phone = document.getElementById('preorder-phone').value.trim();
+  const phoneInput = document.getElementById('preorder-phone');
   const btn = document.getElementById('preorder-submit-btn');
+
+  if (!validatePhone(phone)) {
+    haptic('notification', 'error');
+    phoneInput.classList.add('border-red-500', 'ring-2', 'ring-red-200');
+    phoneInput.focus();
+    alert('Пожалуйста, введите корректный номер телефона (например, +7 999 123-45-67). Номер не должен содержать буквы.');
+    return;
+  }
 
   btn.disabled = true;
   btn.textContent = 'Отправка заявки...';
@@ -571,11 +628,20 @@ async function handleCheckoutSubmit(e) {
   e.preventDefault();
   const name = document.getElementById('order-name').value.trim();
   const phone = document.getElementById('order-phone').value.trim();
+  const phoneInput = document.getElementById('order-phone');
   const delivery = document.querySelector('input[name="delivery"]:checked').value;
   const address = document.getElementById('order-address').value.trim();
   const payment = document.querySelector('input[name="payment"]:checked').value;
   const comment = document.getElementById('order-comment').value.trim();
   const submitBtn = document.getElementById('order-submit-btn');
+
+  if (!validatePhone(phone)) {
+    haptic('notification', 'error');
+    phoneInput.classList.add('border-red-500', 'ring-2', 'ring-red-200');
+    phoneInput.focus();
+    alert('Пожалуйста, введите корректный номер телефона (например, +7 999 123-45-67). Номер не должен содержать буквы.');
+    return;
+  }
 
   const items = Object.values(cart).map(itm => ({
     id: itm.id,

@@ -10,6 +10,7 @@ from django.urls import reverse
 from .models import Order, OrderItem, DeliveryMethod, PaymentMethod, OrderStatus, PaymentStatus
 from apps.catalog.models import Product
 from apps.core.telegram_auth import verify_telegram_init_data
+from apps.core.validators import validate_and_clean_phone
 from apps.telegram_bot.services import (
     notify_admin_new_order,
     notify_admin_payment_received,
@@ -44,6 +45,12 @@ def api_create_order(request):
 
     if not customer_name or not customer_phone:
         return JsonResponse({'error': 'Укажите имя и контактный телефон'}, status=400)
+
+    # Валидация и нормализация номера телефона
+    is_phone_valid, normalized_phone, phone_err = validate_and_clean_phone(customer_phone)
+    if not is_phone_valid:
+        return JsonResponse({'error': phone_err}, status=400)
+    customer_phone = normalized_phone
 
     if not items_data or not isinstance(items_data, list):
         return JsonResponse({'error': 'Корзина пуста'}, status=400)
