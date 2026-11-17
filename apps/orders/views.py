@@ -1,5 +1,8 @@
 import json
 from decimal import Decimal
+from datetime import timedelta
+from django.utils import timezone
+from django.db import transaction
 from django.shortcuts import render, get_object_or_404, redirect
 from django.http import JsonResponse, HttpResponseBadRequest, HttpResponseForbidden
 from django.views.decorators.csrf import csrf_exempt
@@ -90,28 +93,47 @@ def api_create_order(request):
     if not order_items_to_create:
         return JsonResponse({'error': 'Корзина не содержит доступных товаров'}, status=400)
 
-    # Создание заказа в базе данных
-    order = Order.objects.create(
-        customer_name=customer_name,
+    # Защита от дабл-клика / идемпотентность: проверяем не был ли отправлен дубликат за последние 10 секунд
+    recent_duplicate = Order.objects.filter(
         customer_phone=customer_phone,
-        telegram_user_id=telegram_user_id,
-        delivery_method=delivery_method,
-        delivery_address=delivery_address,
-        comment=comment,
-        payment_method=payment_method,
-        payment_status=PaymentStatus.PENDING,
-        status=OrderStatus.NEW,
-        total_amount=total_amount
-    )
+        total_amount=total_amount,
+        created_at__gte=timezone.now() - timedelta(seconds=10)
+    ).order_by('-created_at').first()
 
-    for itm in order_items_to_create:
-        OrderItem.objects.create(
-            order=order,
-            product=itm['product'],
-            product_title=itm['title'],
-            price=itm['price'],
-            quantity=itm['quantity']
+    if recent_duplicate:
+        payment_url = f"/orders/payment/mock/{recent_duplicate.id}/" if recent_duplicate.payment_method == PaymentMethod.ONLINE else None
+        return JsonResponse({
+            'success': True,
+            'order_id': str(recent_duplicate.id),
+            'order_number': recent_duplicate.order_number,
+            'payment_url': payment_url,
+            'total_amount': float(recent_duplicate.total_amount),
+            'message': 'Заказ уже оформлен'
+        })
+
+    # Создание заказа в базе данных (атомарная транзакция)
+    with transaction.atomic():
+        order = Order.objects.create(
+            customer_name=customer_name,
+            customer_phone=customer_phone,
+            telegram_user_id=telegram_user_id,
+            delivery_method=delivery_method,
+            delivery_address=delivery_address,
+            comment=comment,
+            payment_method=payment_method,
+            payment_status=PaymentStatus.PENDING,
+            status=OrderStatus.NEW,
+            total_amount=total_amount
         )
+
+        for itm in order_items_to_create:
+            OrderItem.objects.create(
+                order=order,
+                product=itm['product'],
+                product_title=itm['title'],
+                price=itm['price'],
+                quantity=itm['quantity']
+            )
 
     # Уведомление магазина
     notify_admin_new_order(order)

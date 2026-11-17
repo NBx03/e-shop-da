@@ -84,3 +84,33 @@ class OrderCreationTestCase(TestCase):
             content_type='application/json'
         )
         self.assertEqual(response.status_code, 403)
+
+    def test_idempotent_order_creation_prevents_duplicate(self):
+        payload = {
+            'customer_name': 'Булат',
+            'customer_phone': '+79998887766',
+            'delivery_method': DeliveryMethod.PICKUP,
+            'payment_method': PaymentMethod.ONLINE,
+            'items': [{'id': self.product1.id, 'quantity': 1}]
+        }
+        # First request
+        res1 = self.client.post(
+            reverse('api_create_order'),
+            data=json.dumps(payload),
+            content_type='application/json'
+        )
+        self.assertEqual(res1.status_code, 200)
+        data1 = res1.json()
+
+        # Immediate second request (double click)
+        res2 = self.client.post(
+            reverse('api_create_order'),
+            data=json.dumps(payload),
+            content_type='application/json'
+        )
+        self.assertEqual(res2.status_code, 200)
+        data2 = res2.json()
+
+        # Both return same order ID without duplicating DB record
+        self.assertEqual(data1['order_id'], data2['order_id'])
+        self.assertEqual(Order.objects.filter(customer_phone='+79998887766').count(), 1)

@@ -112,7 +112,7 @@ CSRF_TRUSTED_ORIGINS = [
     origin.strip()
     for origin in os.getenv(
         'CSRF_TRUSTED_ORIGINS',
-        'https://*.ngrok-free.app,https://*.loca.lt,http://localhost:8000,http://127.0.0.1:8000'
+        'https://*.ngrok-free.app,https://*.loca.lt,https://*.trycloudflare.com,http://localhost:8000,http://127.0.0.1:8000'
     ).split(',')
     if origin.strip()
 ]

@@ -1,5 +1,6 @@
 /**
- * ДА! - Telegram Mini App & Browser Frontend Client
+ * ДА! - Telegram Mini App & Browser Frontend Client (ООО «ДА»)
+ * Fullstack Python Internship
  */
 
 let allProducts = [];
@@ -8,14 +9,88 @@ let searchQuery = '';
 let sortBy = 'popular';
 let cart = JSON.parse(localStorage.getItem('da_cart') || localStorage.getItem('voltstore_cart') || '{}');
 
-// Telegram WebApp reference
+// Telegram WebApp reference & initialization
 const tgApp = window.Telegram?.WebApp;
 
+// Safe Haptic Feedback helper
+function haptic(type = 'impact', style = 'light') {
+  try {
+    if (!tgApp?.HapticFeedback) return;
+    if (type === 'impact') {
+      tgApp.HapticFeedback.impactOccurred(style); // 'light', 'medium', 'heavy', 'rigid', 'soft'
+    } else if (type === 'notification') {
+      tgApp.HapticFeedback.notificationOccurred(style); // 'error', 'success', 'warning'
+    } else if (type === 'selection') {
+      tgApp.HapticFeedback.selectionChanged();
+    }
+  } catch (e) {
+    // Non-telegram browser fallback
+  }
+}
+
+// Telegram Closing Confirmation
+function updateTelegramClosingConfirmation() {
+  try {
+    const hasItems = Object.keys(cart).length > 0;
+    const isModalOpen = !document.getElementById('product-modal')?.classList.contains('hidden') ||
+                        !document.getElementById('preorder-modal')?.classList.contains('hidden') ||
+                        !document.getElementById('cart-drawer')?.classList.contains('hidden');
+    if (hasItems || isModalOpen) {
+      tgApp?.enableClosingConfirmation?.();
+    } else {
+      tgApp?.disableClosingConfirmation?.();
+    }
+  } catch (e) {}
+}
+
+// Telegram Native BackButton integration
+function updateTelegramBackButton() {
+  try {
+    if (!tgApp?.BackButton) return;
+    const isProductOpen = !document.getElementById('product-modal')?.classList.contains('hidden');
+    const isPreorderOpen = !document.getElementById('preorder-modal')?.classList.contains('hidden');
+    const isCartOpen = !document.getElementById('cart-drawer')?.classList.contains('hidden');
+
+    if (isProductOpen || isPreorderOpen || isCartOpen) {
+      tgApp.BackButton.show();
+    } else {
+      tgApp.BackButton.hide();
+    }
+  } catch (e) {}
+}
+
+function handleTelegramBackClick() {
+  haptic('impact', 'light');
+  if (!document.getElementById('preorder-modal')?.classList.contains('hidden')) {
+    closePreorderModal();
+  } else if (!document.getElementById('product-modal')?.classList.contains('hidden')) {
+    closeProductModal();
+  } else if (!document.getElementById('cart-drawer')?.classList.contains('hidden')) {
+    const isCartStep2 = !document.getElementById('cart-step-2')?.classList.contains('hidden');
+    if (isCartStep2) {
+      showCartStep(1);
+    } else {
+      toggleCart(false);
+    }
+  }
+}
+
 document.addEventListener('DOMContentLoaded', () => {
+  // Expand Mini App to full height
+  try {
+    tgApp?.ready?.();
+    tgApp?.expand?.();
+    if (tgApp?.BackButton) {
+      tgApp.BackButton.onClick(handleTelegramBackClick);
+    }
+  } catch (e) {}
+
   initUserFromTelegram();
   loadProducts();
   updateCartBadge();
   checkStartAppParam();
+  updateTelegramClosingConfirmation();
+  updateTelegramBackButton();
 });
 
 // Autofill name from Telegram user profile
@@ -81,7 +156,7 @@ function renderProducts(products) {
     let actionBtnHtml = '';
     if (prod.status === 'preorder') {
       actionBtnHtml = `
-        <button onclick="event.stopPropagation(); openPreorderModal(${prod.id}, '${escapeHtml(prod.title)}')"
+        <button onclick="event.stopPropagation(); haptic('impact', 'medium'); openPreorderModal(${prod.id}, '${escapeHtml(prod.title)}')"
           class="w-full py-2.5 px-3 rounded-xl bg-[#EEEDFC] hover:bg-indigo-100 text-[#4F46E5] border border-indigo-200 text-xs sm:text-sm font-bold transition flex items-center justify-center gap-1.5 active:scale-95 shadow-2xs">
           <span>Хочу такой 🔥</span>
         </button>
@@ -89,14 +164,14 @@ function renderProducts(products) {
     } else if (inCartQty > 0) {
       actionBtnHtml = `
         <div onclick="event.stopPropagation()" class="flex items-center justify-between w-full bg-blue-50/80 border border-blue-200/80 rounded-xl p-1">
-          <button onclick="updateCartQuantity(${prod.id}, -1)" class="w-7 h-7 rounded-lg bg-white shadow-2xs text-blue-700 font-black flex items-center justify-center hover:bg-slate-50 transition active:scale-90">-</button>
+          <button onclick="haptic('impact', 'light'); updateCartQuantity(${prod.id}, -1)" class="w-7 h-7 rounded-lg bg-white shadow-2xs text-blue-700 font-black flex items-center justify-center hover:bg-slate-50 transition active:scale-90">-</button>
           <span class="text-xs sm:text-sm font-bold text-blue-900">${inCartQty} шт</span>
-          <button onclick="updateCartQuantity(${prod.id}, 1)" class="w-7 h-7 rounded-lg bg-white shadow-2xs text-blue-700 font-black flex items-center justify-center hover:bg-slate-50 transition active:scale-90">+</button>
+          <button onclick="haptic('impact', 'light'); updateCartQuantity(${prod.id}, 1)" class="w-7 h-7 rounded-lg bg-white shadow-2xs text-blue-700 font-black flex items-center justify-center hover:bg-slate-50 transition active:scale-90">+</button>
         </div>
       `;
     } else {
       actionBtnHtml = `
-        <button onclick="event.stopPropagation(); addToCart(${prod.id})"
+        <button onclick="event.stopPropagation(); haptic('impact', 'medium'); addToCart(${prod.id})"
           class="w-full py-2.5 px-3 rounded-xl bg-[#2481CC] hover:bg-blue-600 text-white text-xs sm:text-sm font-bold transition shadow-2xs flex items-center justify-center gap-1.5 active:scale-95">
           <i data-lucide="shopping-bag" class="w-4 h-4"></i>
           <span>В корзину</span>
@@ -105,7 +180,7 @@ function renderProducts(products) {
     }
 
     return `
-      <div onclick="openProductModal(${prod.id})" class="bg-white rounded-2xl p-2.5 sm:p-3.5 border border-slate-200/90 shadow-2xs hover:shadow-md transition-all flex flex-col justify-between group cursor-pointer">
+      <div onclick="haptic('impact', 'light'); openProductModal(${prod.id})" class="bg-white rounded-2xl p-2.5 sm:p-3.5 border border-slate-200/90 shadow-2xs hover:shadow-md transition-all flex flex-col justify-between group cursor-pointer">
         <div>
           <!-- Thumbnail with studio render and status badge -->
           <div class="relative aspect-square rounded-xl bg-[#F8FAFC] border border-slate-100 overflow-hidden mb-2 p-2 sm:p-3 flex items-center justify-center">
@@ -139,6 +214,7 @@ function renderProducts(products) {
 
 // Category tabs matching Figma
 function selectCategory(catId) {
+  haptic('selection');
   activeCategory = catId;
   document.querySelectorAll('.category-btn').forEach(btn => {
     const match = btn.getAttribute('data-cat-id') === String(catId);
@@ -163,6 +239,7 @@ function handleSearch(val) {
 
 // Sorting
 function handleSort(val) {
+  haptic('selection');
   sortBy = val;
   loadProducts();
 }
@@ -190,8 +267,8 @@ async function openProductModal(prodIdOrSlug) {
     const badge = document.getElementById('modal-status-badge');
     badge.textContent = prod.status_label;
     badge.className = `absolute top-3 left-3 px-2.5 py-1 rounded-full text-[11px] font-bold shadow-sm ${
-      prod.status === 'in_stock' ? 'bg-emerald-100 text-emerald-700' :
-      prod.status === 'on_the_way' ? 'bg-amber-100 text-amber-700' : 'bg-indigo-100 text-indigo-700'
+      prod.status === 'in_stock' ? 'bg-[#DCFCE7] text-[#15803D] border border-[#BBF7D0]' :
+      prod.status === 'on_the_way' ? 'bg-[#FEF3C7] text-[#B45309] border border-[#FDE68A]' : 'bg-[#EEEDFC] text-[#4F46E5] border border-[#C7D2FE]'
     }`;
 
     document.getElementById('modal-desc').textContent = prod.description;
@@ -215,8 +292,8 @@ async function openProductModal(prodIdOrSlug) {
     const actionBar = document.getElementById('modal-action-bar');
     if (prod.status === 'preorder') {
       actionBar.innerHTML = `
-        <button onclick="closeProductModal(); openPreorderModal(${prod.id}, '${escapeHtml(prod.title)}')"
-          class="w-full py-3.5 bg-indigo-600 hover:bg-indigo-700 text-white font-bold rounded-xl transition shadow-md flex items-center justify-center gap-2">
+        <button onclick="closeProductModal(); haptic('impact', 'medium'); openPreorderModal(${prod.id}, '${escapeHtml(prod.title)}')"
+          class="w-full py-3.5 bg-indigo-600 hover:bg-indigo-700 text-white font-bold rounded-xl transition shadow-md flex items-center justify-center gap-2 active:scale-98">
           <i data-lucide="flame" class="w-5 h-5"></i>
           <span>Оставить заявку «Хочу такой»</span>
         </button>
@@ -224,7 +301,7 @@ async function openProductModal(prodIdOrSlug) {
     } else {
       actionBar.innerHTML = `
         <button onclick="addToCart(${prod.id}); closeProductModal(); toggleCart(true);"
-          class="w-full py-3.5 bg-blue-600 hover:bg-blue-700 text-white font-bold rounded-xl transition shadow-md flex items-center justify-center gap-2">
+          class="w-full py-3.5 bg-[#2481CC] hover:bg-blue-600 text-white font-bold rounded-xl transition shadow-md flex items-center justify-center gap-2 active:scale-98">
           <i data-lucide="shopping-bag" class="w-5 h-5"></i>
           <span>Добавить в корзину за ${formatPrice(prod.price)} ₽</span>
         </button>
@@ -233,6 +310,8 @@ async function openProductModal(prodIdOrSlug) {
 
     if (window.lucide) lucide.createIcons();
     document.getElementById('product-modal').classList.remove('hidden');
+    updateTelegramBackButton();
+    updateTelegramClosingConfirmation();
   } catch (err) {
     console.error('Error opening product modal:', err);
   }
@@ -240,6 +319,8 @@ async function openProductModal(prodIdOrSlug) {
 
 function closeProductModal() {
   document.getElementById('product-modal').classList.add('hidden');
+  updateTelegramBackButton();
+  updateTelegramClosingConfirmation();
 }
 
 // ================= PREORDER REQUEST MODAL ("ХОЧУ ТАКОЙ") =================
@@ -247,10 +328,14 @@ function openPreorderModal(prodId, title) {
   document.getElementById('preorder-product-id').value = prodId;
   document.getElementById('preorder-product-name').textContent = title;
   document.getElementById('preorder-modal').classList.remove('hidden');
+  updateTelegramBackButton();
+  updateTelegramClosingConfirmation();
 }
 
 function closePreorderModal() {
   document.getElementById('preorder-modal').classList.add('hidden');
+  updateTelegramBackButton();
+  updateTelegramClosingConfirmation();
 }
 
 async function handlePreorderSubmit(e) {
@@ -279,12 +364,15 @@ async function handlePreorderSubmit(e) {
 
     const data = await res.json();
     if (res.ok && data.success) {
+      haptic('notification', 'success');
       alert('Заявка принята! Мы оповестим вас, когда товар прибудет.');
       closePreorderModal();
     } else {
+      haptic('notification', 'error');
       alert(data.error || 'Ошибка при отправке');
     }
   } catch (err) {
+    haptic('notification', 'error');
     alert('Ошибка сети: ' + err);
   } finally {
     btn.disabled = false;
@@ -326,6 +414,7 @@ function updateCartQuantity(prodId, delta) {
 function saveCart() {
   localStorage.setItem('da_cart', JSON.stringify(cart));
   updateCartBadge();
+  updateTelegramClosingConfirmation();
 }
 
 function updateCartBadge() {
@@ -359,6 +448,7 @@ function updateCartBadge() {
 }
 
 function toggleCart(open) {
+  haptic('impact', 'light');
   const drawer = document.getElementById('cart-drawer');
   if (open) {
     showCartStep(1);
@@ -367,9 +457,12 @@ function toggleCart(open) {
   } else {
     drawer.classList.add('hidden');
   }
+  updateTelegramBackButton();
+  updateTelegramClosingConfirmation();
 }
 
 function showCartStep(step) {
+  haptic('impact', 'light');
   const step1 = document.getElementById('cart-step-1');
   const step2 = document.getElementById('cart-step-2');
   const backBtn = document.getElementById('cart-back-btn');
@@ -397,6 +490,7 @@ function showCartStep(step) {
     checkoutBtn.classList.add('hidden');
     submitBtn.classList.remove('hidden');
   }
+  updateTelegramBackButton();
 }
 
 function renderCartDrawer() {
@@ -424,15 +518,15 @@ function renderCartDrawer() {
 
     return `
       <div class="flex items-center gap-3 py-3">
-        <img src="${itm.image}" class="w-14 h-14 rounded-xl object-cover bg-slate-100 flex-shrink-0">
+        <img src="${itm.image}" class="w-14 h-14 rounded-xl object-contain bg-[#F8FAFC] border border-slate-100 flex-shrink-0 p-1">
         <div class="flex-1 min-w-0">
           <h4 class="text-xs font-bold text-slate-800 truncate">${escapeHtml(itm.title)}</h4>
-          <span class="text-xs font-bold text-blue-600">${formatPrice(itm.price)} ₽</span>
+          <span class="text-xs font-bold text-[#2481CC]">${formatPrice(itm.price)} ₽</span>
         </div>
         <div class="flex items-center gap-1.5 bg-slate-100 rounded-xl p-1">
-          <button onclick="updateCartQuantity(${itm.id}, -1)" class="w-6 h-6 rounded-lg bg-white shadow-xs text-xs font-bold flex items-center justify-center">-</button>
+          <button onclick="haptic('impact', 'light'); updateCartQuantity(${itm.id}, -1)" class="w-6 h-6 rounded-lg bg-white shadow-xs text-xs font-bold flex items-center justify-center active:scale-90">-</button>
           <span class="text-xs font-bold w-5 text-center">${itm.quantity}</span>
-          <button onclick="updateCartQuantity(${itm.id}, 1)" class="w-6 h-6 rounded-lg bg-white shadow-xs text-xs font-bold flex items-center justify-center">+</button>
+          <button onclick="haptic('impact', 'light'); updateCartQuantity(${itm.id}, 1)" class="w-6 h-6 rounded-lg bg-white shadow-xs text-xs font-bold flex items-center justify-center active:scale-90">+</button>
         </div>
       </div>
     `;
@@ -444,6 +538,7 @@ function renderCartDrawer() {
 
 // Delivery UI logic
 function updateDeliveryUI(method) {
+  haptic('selection');
   const addressBlock = document.getElementById('address-block');
   const addressInput = document.getElementById('order-address');
   const codRadio = document.getElementById('payment-cod-radio');
@@ -515,6 +610,7 @@ async function handleCheckoutSubmit(e) {
 
     const data = await res.json();
     if (res.ok && data.success) {
+      haptic('notification', 'success');
       // Clear cart
       cart = {};
       saveCart();
@@ -526,11 +622,13 @@ async function handleCheckoutSubmit(e) {
         window.location.href = `/orders/status/${data.order_id}/`;
       }
     } else {
+      haptic('notification', 'error');
       alert(data.error || 'Ошибка при создании заказа');
       submitBtn.disabled = false;
       submitBtn.innerHTML = 'Подтвердить заказ';
     }
   } catch (err) {
+    haptic('notification', 'error');
     alert('Ошибка сети: ' + err);
     submitBtn.disabled = false;
     submitBtn.innerHTML = 'Подтвердить заказ';

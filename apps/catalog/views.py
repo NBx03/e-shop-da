@@ -1,4 +1,7 @@
 import json
+from datetime import timedelta
+from django.utils import timezone
+from django.db import transaction
 from django.shortcuts import render, get_object_or_404
 from django.http import JsonResponse, HttpResponseBadRequest
 from django.views.decorators.csrf import csrf_exempt
@@ -131,12 +134,27 @@ def api_preorder(request):
         if is_valid and parsed_data and 'user' in parsed_data:
             telegram_user_id = parsed_data['user'].get('id')
 
-    preorder = PreorderRequest.objects.create(
+    # Защита от спама/дабл-клика: проверяем дубликат за последние 15 секунд
+    recent_duplicate = PreorderRequest.objects.filter(
         product=product,
-        customer_name=customer_name,
         customer_phone=customer_phone,
-        telegram_user_id=telegram_user_id
-    )
+        created_at__gte=timezone.now() - timedelta(seconds=15)
+    ).first()
+
+    if recent_duplicate:
+        return JsonResponse({
+            'success': True,
+            'preorders_count': product.preorders_count,
+            'message': 'Заявка уже была принята ранее!'
+        })
+
+    with transaction.atomic():
+        preorder = PreorderRequest.objects.create(
+            product=product,
+            customer_name=customer_name,
+            customer_phone=customer_phone,
+            telegram_user_id=telegram_user_id
+        )
 
     # Уведомляем администратора магазина в Telegram
     notify_admin_preorder(preorder)
