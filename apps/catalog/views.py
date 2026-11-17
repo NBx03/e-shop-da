@@ -69,7 +69,7 @@ def api_products(request):
             'category_name': p.category.name,
             'status': p.status,
             'status_label': p.get_status_display(),
-            'main_image': f"{p.main_image.url}?v=realphotos1" if p.main_image else '',
+            'main_image': f"{p.main_image.url}?v=realphotos3" if p.main_image else '',
             'preorders_count': p.preorders_count,
         })
 
@@ -85,9 +85,9 @@ def api_product_detail(request, slug_or_id):
     else:
         product = get_object_or_404(Product, slug=slug_or_id, is_active=True)
 
-    gallery = [f"{img.image.url}?v=realphotos1" for img in product.gallery_images.all()]
-    if product.main_image and f"{product.main_image.url}?v=realphotos1" not in gallery:
-        gallery.insert(0, f"{product.main_image.url}?v=realphotos1")
+    gallery = [f"{img.image.url}?v=realphotos3" for img in product.gallery_images.all()]
+    if product.main_image and f"{product.main_image.url}?v=realphotos3" not in gallery:
+        gallery.insert(0, f"{product.main_image.url}?v=realphotos3")
 
     data = {
         'id': product.id,
