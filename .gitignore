@@ -14,7 +14,11 @@ ENV/
 local_settings.py
 db.sqlite3
 db.sqlite3-journal
-media/
+# Media (preserve seeded product catalog images)
+media/*
+!media/products/
+!media/products/main/
+!media/products/main/*.webp
 
 # Environment variables
 .env
