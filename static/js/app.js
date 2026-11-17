@@ -139,6 +139,7 @@ document.addEventListener('DOMContentLoaded', () => {
   checkStartAppParam();
   updateTelegramClosingConfirmation();
   updateTelegramBackButton();
+  if (window.lucide) lucide.createIcons();
 });
 
 // Autofill name from Telegram user profile
@@ -285,12 +286,56 @@ function handleSearch(val) {
   }, 300);
 }
 
-// Sorting
-function handleSort(val) {
+// Custom Sorting dropdown
+function toggleSortMenu() {
+  haptic('selection');
+  const menu = document.getElementById('sort-menu');
+  const chevron = document.getElementById('sort-chevron');
+  if (!menu) return;
+
+  const isOpen = !menu.classList.contains('hidden');
+  if (isOpen) {
+    menu.classList.add('hidden');
+    if (chevron) chevron.style.transform = 'rotate(0deg)';
+  } else {
+    menu.classList.remove('hidden');
+    if (chevron) chevron.style.transform = 'rotate(180deg)';
+    if (window.lucide) lucide.createIcons();
+  }
+}
+
+function applySort(val, label) {
   haptic('selection');
   sortBy = val;
+  const labelEl = document.getElementById('sort-label');
+  if (labelEl) labelEl.textContent = label;
+
+  ['popular', 'price_asc', 'price_desc'].forEach(opt => {
+    const checkEl = document.getElementById(`sort-check-${opt}`);
+    if (checkEl) {
+      if (opt === val) checkEl.classList.remove('hidden');
+      else checkEl.classList.add('hidden');
+    }
+  });
+
+  const menu = document.getElementById('sort-menu');
+  const chevron = document.getElementById('sort-chevron');
+  if (menu) menu.classList.add('hidden');
+  if (chevron) chevron.style.transform = 'rotate(0deg)';
+
   loadProducts();
 }
+
+// Close sort menu on click outside
+document.addEventListener('click', (e) => {
+  const container = document.getElementById('sort-dropdown-container');
+  const menu = document.getElementById('sort-menu');
+  const chevron = document.getElementById('sort-chevron');
+  if (container && menu && !container.contains(e.target)) {
+    menu.classList.add('hidden');
+    if (chevron) chevron.style.transform = 'rotate(0deg)';
+  }
+});
 
 // ================= PRODUCT DETAIL MODAL =================
 async function openProductModal(prodIdOrSlug) {
